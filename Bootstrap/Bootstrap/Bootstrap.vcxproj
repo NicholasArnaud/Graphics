@@ -19,7 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\imgui\imgui.cpp" />
+    <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui.h" />
+    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
+    <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\Dependencies\imgui\stb_textedit.h" />
+    <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CEC9CF4C-0209-43B8-824B-30501F0B6FF4}</ProjectGuid>
@@ -72,8 +83,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependencies;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\imgui;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
