@@ -30,6 +30,9 @@
     <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="gl_core_4_4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dependencies\imgui\stb_textedit.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h">
       <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_core_4_4.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
