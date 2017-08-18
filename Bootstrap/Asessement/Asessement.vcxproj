@@ -18,30 +18,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Dependencies\imgui\imgui.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="gl_core_4_4.c" />
-    <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="IntrodutionApp.cpp" />
-    <ClCompile Include="Source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_textedit.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="gl_core_4_4.h" />
-    <ClInclude Include="IntrodutionApp.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CEC9CF4C-0209-43B8-824B-30501F0B6FF4}</ProjectGuid>
-    <RootNamespace>Bootstrap</RootNamespace>
+    <ProjectGuid>{E221CFF9-28A9-41DB-9FD3-463FE644B226}</ProjectGuid>
+    <RootNamespace>Asessement</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -89,20 +68,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\imgui;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
-    <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -137,6 +109,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
