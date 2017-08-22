@@ -25,6 +25,8 @@ void IntrodutionApp::draw()
 {
 }
 
+
 void IntrodutionApp::run(const char * title, unsigned int width, unsigned int height, bool fullscreen)
 {
+	Application::run(title, width, height, fullscreen);
 }

@@ -21,7 +21,6 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 		return;
 
 	GLFWmonitor* monitor = (fullscreen) ? glfwGetPrimaryMonitor() : nullptr;
-
 	m_window = glfwCreateWindow(width, height, title, monitor, nullptr);
 
 	glfwMakeContextCurrent(m_window);
