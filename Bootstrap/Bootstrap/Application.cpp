@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-Application::Application() : m_window(nullptr)
+Application::Application() : m_window(nullptr), m_gameover(false)
 {
 }
 
@@ -24,15 +24,15 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 	m_window = glfwCreateWindow(width, height, title, monitor, nullptr);
 
 	glfwMakeContextCurrent(m_window);
-	
-	if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
+
+	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
 	{
 		glfwDestroyWindow(m_window);
 		glfwTerminate();
 		return;
 	}
 	glClearColor(0.5f, 0.5f, 1, 1);
-	
+
 	glEnable(GL_DEPTH_TEST);
 
 	double prevTime = glfwGetTime();
@@ -50,6 +50,5 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 		draw();
 		glfwSwapBuffers(m_window);
 		m_gameover = (glfwWindowShouldClose(m_window) == GLFW_TRUE);
-	} 
-
+	}
 }

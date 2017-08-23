@@ -1,27 +1,27 @@
 #pragma once
-#include <glm.hpp>
+#include <vec3.hpp>
+#include <mat4x4.hpp>
 using namespace glm;
+
 class Camera
 {
 public:
 	Camera();
-	~Camera();
-
+	virtual ~Camera();
 	virtual void update(float deltaTime) = 0;
-	void setPerspective(float fieldOfView, float aspectRatio, float near, float far);
-	void setLookAt(vec3 from, vec3 to, vec3 up);
+	static void setPerspective(float fieldOfView, float aspectRatio, float near, float far);
+	static void setLookAt(vec3 from, vec3 to, vec3 up);
 	void setPosition(vec3 position);
-	mat4 getWorldTransform();
-	mat4 getView();
-	mat4 getProjection();
-	mat4 getProjectionView();
-	
+	mat4 getWorldTransform() const;
+	mat4 getView() const;
+	mat4 getProjection() const;
+	mat4 getProjectionView() const;
+
 
 private:
-	 mat4 worldTransform;
-	 mat4 viewTransform;
-	 mat4 projectionTransform;
-	 mat4 projectionViewTransform;
-	 void updateProjectionViewTransform();
+	mat4 m_worldTransform;
+	mat4 m_viewTransform;
+	mat4 m_projectionTransform;
+	mat4 m_projectionViewTransform;
+	static void updateProjectionViewTransform();
 };
-

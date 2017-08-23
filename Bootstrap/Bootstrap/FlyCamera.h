@@ -1,5 +1,6 @@
 #pragma once
 #include "Camera.h"
+
 class FlyCamera :
 	public Camera
 {
@@ -8,11 +9,10 @@ public:
 	~FlyCamera();
 
 	// Inherited via Camera
-	virtual void update(float deltaTime) override;
+	void update(float deltaTime) override;
 	void setSpeed(float speed);
 
 private:
-	float speed;
-	vec3 up;
+	float m_speed;
+	vec3 m_up;
 };
-

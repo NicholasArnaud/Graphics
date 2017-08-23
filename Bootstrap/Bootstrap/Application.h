@@ -1,5 +1,6 @@
 #pragma once
-struct  GLFWwindow;
+struct GLFWwindow;
+
 class Application
 {
 public:
@@ -16,4 +17,3 @@ protected:
 	GLFWwindow* m_window;
 	bool m_gameover;
 };
-
