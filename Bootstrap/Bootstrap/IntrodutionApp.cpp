@@ -1,4 +1,7 @@
 #include "IntrodutionApp.h"
+#include "FlyCamera.h"
+#include "Gizmos.h"
+#include <GLFW/glfw3.h>
 
 IntrodutionApp::IntrodutionApp()
 {
@@ -23,6 +26,28 @@ void IntrodutionApp::update(float)
 
 void IntrodutionApp::draw()
 {
+	Camera* cam = new FlyCamera();
+	mat4 s1 = mat4(1);
+	vec4 center = vec4(0, 0, 0, 1);
+	vec4 color = vec4(0, 0, 0, 0);
+	Gizmos::clear();
+	Gizmos::addSphere(s1[3], 1, 20, 20, color);
+	vec4 white(1);
+	vec4 black(0, 0, 0, 1);
+	for (int i = 0; i < 21; ++i)
+	{
+		Gizmos::addLine(vec3(-10 + i, 0, 10),
+			vec3(-10 + i, 0, -10),
+			i == 10 ? white : black);
+		Gizmos::addLine(vec3(10, 0, -10 + i),
+			vec3(-10, 0, -10 + i), i == 10 ? white : black);
+	}
+	
+	//cam->setPosition(vec3(0,3,-10));
+	cam->setPerspective(80, 16/9.f, .1f, 20);
+
+	cam->setLookAt(vec3(10, 10, 10), vec3(0, 0, 0), vec3(0, 1, 0));
+	Gizmos::draw(cam->getProjectionView());
 }
 
 

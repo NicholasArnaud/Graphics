@@ -16,9 +16,6 @@
     <Filter Include="Imgui">
       <UniqueIdentifier>{21fd1967-a85c-4cae-b6e3-38bc9cdc5a45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gl_Core_4_4">
-      <UniqueIdentifier>{63dd3475-1b1a-45b9-b5cb-7e5a86f03181}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\imgui\imgui.cpp">
@@ -48,8 +45,11 @@
     <ClCompile Include="imgui_impl_glfw_gl3.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="gl_core_4_4.c">
-      <Filter>gl_Core_4_4</Filter>
+    <ClCompile Include="..\Dependencies\gizmos\Gizmos.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Dependencies\glcore\gl_core_4_4.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,8 +83,11 @@
     <ClInclude Include="FlyCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gl_core_4_4.h">
-      <Filter>gl_Core_4_4</Filter>
+    <ClInclude Include="..\Dependencies\gizmos\Gizmos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\glcore\gl_core_4_4.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

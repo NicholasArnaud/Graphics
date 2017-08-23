@@ -19,18 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Dependencies\gizmos\Gizmos.cpp" />
+    <ClCompile Include="..\Dependencies\glcore\gl_core_4_4.c" />
     <ClCompile Include="..\Dependencies\imgui\imgui.cpp" />
     <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
-    <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="IntrodutionApp.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Dependencies\gizmos\Gizmos.h" />
+    <ClInclude Include="..\Dependencies\glcore\gl_core_4_4.h" />
     <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
     <ClInclude Include="..\Dependencies\imgui\imgui.h" />
     <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
@@ -40,7 +43,6 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FlyCamera.h" />
-    <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="IntrodutionApp.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -94,7 +96,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\imgui;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\imgui;$(SolutionDir)Dependencies\glcore;$(SolutionDir)Dependencies\gizmos;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

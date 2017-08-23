@@ -24,5 +24,5 @@ private:
 
 	mat4 m_projectionTransform;
 	mat4 m_projectionViewTransform;
-	static void updateProjectionViewTransform();
+	void updateProjectionViewTransform();
 };
