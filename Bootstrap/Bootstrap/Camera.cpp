@@ -36,7 +36,7 @@ mat4 Camera::getWorldTransform() const
 
 void Camera::setPerspective(float fieldOfView, float aspectRatio, float near, float far)
 {
-	mat4 scalar = mat4(1 /(aspectRatio* tan(fieldOfView / 2)), 0, 0, 0,
+	m_projectionTransform = mat4(1 /(aspectRatio* tan(fieldOfView / 2)), 0, 0, 0,
 	                   0, 1 / tan(fieldOfView / 2), 0, 0,
 	                   0, 0, -((far +near) / (far - near)),-(2*far* near /(far - near)),
 	                   0, 0, -1, 0);
@@ -45,6 +45,7 @@ void Camera::setPerspective(float fieldOfView, float aspectRatio, float near, fl
 
 void Camera::setLookAt(vec3 from, vec3 to, vec3 up)
 {
+
 }
 
 void Camera::setPosition(vec3 position)
