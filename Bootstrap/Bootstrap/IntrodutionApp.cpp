@@ -42,10 +42,6 @@ void IntrodutionApp::draw()
 		Gizmos::addLine(vec3(10, 0, -10 + i),
 			vec3(-10, 0, -10 + i), i == 10 ? white : black);
 	}
-	
-	//cam->setPosition(vec3(0,3,-10));
-	cam->setPerspective(80, 16/9.f, .1f, 20);
-
 	cam->setLookAt(vec3(10, 10, 10), vec3(0, 0, 0), vec3(0, 1, 0));
 	Gizmos::draw(cam->getProjectionView());
 }

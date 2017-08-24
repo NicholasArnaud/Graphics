@@ -3,8 +3,9 @@
 #include <assert.h>
 #include <glm.hpp>
 
-Camera::Camera():m_worldTransform(1),m_viewTransform(1),m_projectionTransform(1)
+Camera::Camera() :m_worldTransform(mat4(1)), m_viewTransform(mat4(1)), m_projectionTransform(mat4(1)), m_projectionViewTransform(mat4(1))
 {
+	setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
 }
 
 
@@ -38,28 +39,21 @@ mat4 Camera::getWorldTransform() const
 void Camera::setPerspective(float fieldOfView, float aspectRatio, float near, float far)
 {
 	auto x = 1.f / (aspectRatio * tan(fieldOfView / 2.f));
-	auto y = 1.f / tan(fieldOfView / 2.f);
-	auto z = -1.f *((2.f * far * near) / far - near);
-	auto w = -1.f * ((2.f *far * near) / (far - near));
+	auto y = 1.f / (tan(fieldOfView / 2.f));
+	auto z = -1.f *((far + near) / (far - near));
+	auto w = -1.f * (2.f *(far * near) / (far - near));
 	m_projectionTransform = mat4(
 		vec4(x, 0, 0, 0),
 		vec4(0, y, 0, 0),
 		vec4(0, 0, z, -1.f),
 		vec4(0, 0, w, 0));
-
-
-	/*m_projectionTransform = mat4(1 /(aspectRatio* tan(fieldOfView / 2)), 0, 0, 0,
-	                   0, 1 / tan(fieldOfView / 2), 0, 0,
-	                   0, 0, -((far +near) / (far - near)),-(2*far* near /(far - near)),
-	                   0, 0, -1, 0);
-	*/
+	auto copy = glm::perspective(fieldOfView, aspectRatio, near, far);
+	assert(copy == m_projectionTransform);
 }
 
 void Camera::setLookAt(vec3 eye, vec3 centre, vec3 up)
 {
-	vec3  f = eye - centre;
-	f = normalize(f);
-	vec3 z = f;
+	vec3 z = normalize(eye - centre);
 	vec3 s = cross(up, z);
 	vec3 x = normalize(s);
 	vec3 y = cross(z, x);
@@ -74,9 +68,7 @@ void Camera::setLookAt(vec3 eye, vec3 centre, vec3 up)
 	m_view = m_view * trans;
 	auto m_test = lookAt(eye, centre, up);
 	assert(m_view == m_test);
-	m_worldTransform = m_view * -1;
-	m_projectionViewTransform = m_view *m_projectionTransform ;
-
+	m_worldTransform = inverse(m_view);
 }
 
 void Camera::setPosition(vec3 position)

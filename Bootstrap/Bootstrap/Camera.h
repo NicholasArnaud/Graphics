@@ -21,7 +21,6 @@ public:
 private:
 	mat4 m_worldTransform;
 	mat4 m_viewTransform;
-
 	mat4 m_projectionTransform;
 	mat4 m_projectionViewTransform;
 	void updateProjectionViewTransform();
