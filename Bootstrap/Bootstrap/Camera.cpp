@@ -5,7 +5,8 @@
 
 Camera::Camera() :m_worldTransform(mat4(1)), m_viewTransform(mat4(1)), m_projectionTransform(mat4(1)), m_projectionViewTransform(mat4(1))
 {
-	setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
+	//setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
+	setOrtho(1, 10, 1, 10, 10, 1);
 }
 
 
@@ -51,13 +52,24 @@ void Camera::setPerspective(float fieldOfView, float aspectRatio, float near, fl
 	assert(copy == m_projectionTransform);
 }
 
+void Camera::setOrtho(float near, float far, float left, float right, float top, float bottom)
+{
+	vec4 x = vec4(2.f/(right - left), 0,0,0);
+	vec4 y = vec4(0, 2.f/(top - bottom),0,0);
+	vec4 z = vec4(0,0, -2.f/(far - near),0);
+	vec4 w = vec4(-1.f*(right + left)/(right-left), -1.f*(top + bottom)/ (top - bottom), -1.f*(far + near)/ (far -near),1);
+	m_projectionTransform = mat4(x, y, z, w);
+	auto copy = glm::ortho(left, right, bottom, top, near, far);
+	assert(m_projectionTransform == copy);
+}
+
 void Camera::setLookAt(vec3 eye, vec3 centre, vec3 up)
 {
 	vec3 z = normalize(eye - centre);
 	vec3 s = cross(up, z);
 	vec3 x = normalize(s);
 	vec3 y = cross(z, x);
-	mat4 m_view = mat4(x[0], y[0], z[0],0,
+	 m_viewTransform = mat4(x[0], y[0], z[0],0,
 		x[1], y[1], z[1],0,
 		x[2], y[2], z[2],0,
 		0,0,0,1);
@@ -65,10 +77,10 @@ void Camera::setLookAt(vec3 eye, vec3 centre, vec3 up)
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		-eye.x, -eye.y, -eye.z, 1);
-	m_view = m_view * trans;
+	m_viewTransform = m_viewTransform * trans;
 	auto m_test = lookAt(eye, centre, up);
-	assert(m_view == m_test);
-	m_worldTransform = inverse(m_view);
+	assert(m_viewTransform == m_test);
+	m_worldTransform = inverse(m_viewTransform);
 }
 
 void Camera::setPosition(vec3 position)
@@ -83,3 +95,27 @@ void Camera::updateProjectionViewTransform()
 {
 	m_projectionViewTransform = m_projectionTransform * m_viewTransform;
 }
+
+
+#pragma region Inherited
+
+void Camera::startup()
+{
+}
+
+void Camera::shutdown()
+{
+}
+
+void Camera::update(float)
+{
+}
+
+void Camera::draw()
+{
+}
+
+void Camera::run(const char * title, unsigned int width, unsigned int height, bool fullscreen)
+{
+}
+#pragma  endregion 

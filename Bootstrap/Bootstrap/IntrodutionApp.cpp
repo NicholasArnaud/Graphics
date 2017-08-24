@@ -1,7 +1,7 @@
 #include "IntrodutionApp.h"
-#include "FlyCamera.h"
 #include "Gizmos.h"
 #include <GLFW/glfw3.h>
+#include "Camera.h"
 
 IntrodutionApp::IntrodutionApp()
 {
@@ -26,7 +26,7 @@ void IntrodutionApp::update(float)
 
 void IntrodutionApp::draw()
 {
-	Camera* cam = new FlyCamera();
+	Camera* cam = new Camera();
 	mat4 s1 = mat4(1);
 	vec4 center = vec4(0, 0, 0, 1);
 	vec4 color = vec4(0, 0, 0, 0);

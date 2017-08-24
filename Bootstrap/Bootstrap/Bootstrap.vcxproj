@@ -26,7 +26,6 @@
     <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="IntrodutionApp.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -42,7 +41,6 @@
     <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="IntrodutionApp.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

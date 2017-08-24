@@ -1,4 +1,5 @@
 #include "IntrodutionApp.h"
+#include "Camera.h"
 
 
 int main()

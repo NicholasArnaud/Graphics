@@ -1,15 +1,18 @@
 #pragma once
 #include <vec3.hpp>
 #include <mat4x4.hpp>
+#include "Application.h"
 using namespace glm;
 
-class Camera
+
+class Camera:
+public Application
 {
 public:
 	Camera();
 	virtual ~Camera();
-	virtual void update(float deltaTime) = 0;
 	void setPerspective(float fieldOfView, float aspectRatio, float near, float far);
+	void setOrtho(float near, float far, float left, float right, float top, float bottom);
 	void setLookAt(vec3 from, vec3 to, vec3 up);
 	void setPosition(vec3 position);
 	mat4 getWorldTransform() const;
@@ -24,4 +27,12 @@ private:
 	mat4 m_projectionTransform;
 	mat4 m_projectionViewTransform;
 	void updateProjectionViewTransform();
+
+
+	// Inherited via Application
+	void startup() override;
+	void shutdown() override;
+	void update(float) override;
+	void draw() override;
+	void run(const char* title, unsigned int width, unsigned int height, bool fullscreen) override;
 };
