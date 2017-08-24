@@ -12,7 +12,7 @@ public:
 	Camera();
 	virtual ~Camera();
 	void setPerspective(float fieldOfView, float aspectRatio, float near, float far);
-	void setOrtho(float near, float far, float left, float right, float top, float bottom);
+	void setOrtho(float left, float right, float bottom, float top, float near, float far);
 	void setLookAt(vec3 from, vec3 to, vec3 up);
 	void setPosition(vec3 position);
 	mat4 getWorldTransform() const;

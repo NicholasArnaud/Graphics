@@ -5,8 +5,8 @@
 
 Camera::Camera() :m_worldTransform(mat4(1)), m_viewTransform(mat4(1)), m_projectionTransform(mat4(1)), m_projectionViewTransform(mat4(1))
 {
-	//setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
-	setOrtho(1, 10, 1, 10, 10, 1);
+	setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
+	//setOrtho(-15, 15, -15, 15, -11, 50);
 }
 
 
@@ -52,14 +52,16 @@ void Camera::setPerspective(float fieldOfView, float aspectRatio, float near, fl
 	assert(copy == m_projectionTransform);
 }
 
-void Camera::setOrtho(float near, float far, float left, float right, float top, float bottom)
+void Camera::setOrtho(float left, float right, float bottom, float top,float near, float far)
 {
-	vec4 x = vec4(2.f/(right - left), 0,0,0);
-	vec4 y = vec4(0, 2.f/(top - bottom),0,0);
-	vec4 z = vec4(0,0, -2.f/(far - near),0);
-	vec4 w = vec4(-1.f*(right + left)/(right-left), -1.f*(top + bottom)/ (top - bottom), -1.f*(far + near)/ (far -near),1);
-	m_projectionTransform = mat4(x, y, z, w);
-	auto copy = glm::ortho(left, right, bottom, top, near, far);
+	vec4 xCol = vec4(2.f / (right - left), 0, 0, 0);
+	vec4 yCol = vec4(0, 2.f / (top - bottom), 0, 0);
+	vec4 zCol = vec4(0, 0, -2.f / (far - near), 0);
+	vec4 wCol = vec4(-1.f*((right + left) / (right - left)),
+		-1.f*((top + bottom) / (top - bottom)),
+		-1.f*((far + near) / (far - near)), 1);
+	m_projectionTransform = mat4(xCol, yCol, zCol, wCol);
+	auto copy = ortho(left, right, bottom, top, near, far);
 	assert(m_projectionTransform == copy);
 }
 
@@ -69,10 +71,10 @@ void Camera::setLookAt(vec3 eye, vec3 centre, vec3 up)
 	vec3 s = cross(up, z);
 	vec3 x = normalize(s);
 	vec3 y = cross(z, x);
-	 m_viewTransform = mat4(x[0], y[0], z[0],0,
-		x[1], y[1], z[1],0,
-		x[2], y[2], z[2],0,
-		0,0,0,1);
+	m_viewTransform = mat4(x[0], y[0], z[0], 0,
+		x[1], y[1], z[1], 0,
+		x[2], y[2], z[2], 0,
+		0, 0, 0, 1);
 	mat4 trans = mat4(1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,

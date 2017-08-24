@@ -28,7 +28,7 @@ void IntrodutionApp::draw()
 {
 	Camera* cam = new Camera();
 	mat4 s1 = mat4(1);
-	vec4 center = vec4(0, 0, 0, 1);
+	vec4 center = vec4(0, 5, 0, 1);
 	vec4 color = vec4(0, 0, 0, 0);
 	Gizmos::clear();
 	Gizmos::addSphere(s1[3], 1, 20, 20, color);
