@@ -1,10 +1,10 @@
 #include "IntrodutionApp.h"
-#include "Camera.h"
+#include "CameraApp.h"
 
 
 int main()
 {
-	Application* app = new IntrodutionApp();
+	Application* app = new CameraApp();
 	app->run("Intro To Opengl", 1600, 900, false);
 	delete app;
 }

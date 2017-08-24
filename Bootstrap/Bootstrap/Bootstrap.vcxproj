@@ -25,10 +25,11 @@
     <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraApp.cpp" />
     <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="IntrodutionApp.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dependencies\gizmos\Gizmos.h" />
@@ -40,8 +41,9 @@
     <ClInclude Include="..\Dependencies\imgui\stb_textedit.h" />
     <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
     <ClInclude Include="Application.h" />
-    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraApp.h" />
     <ClInclude Include="IntrodutionApp.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CEC9CF4C-0209-43B8-824B-30501F0B6FF4}</ProjectGuid>

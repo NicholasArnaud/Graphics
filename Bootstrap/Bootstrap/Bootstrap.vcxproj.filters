@@ -39,9 +39,6 @@
     <ClCompile Include="IntrodutionApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="imgui_impl_glfw_gl3.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
@@ -50,6 +47,12 @@
     </ClCompile>
     <ClCompile Include="..\Dependencies\glcore\gl_core_4_4.c">
       <Filter>gl_core</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,14 +80,17 @@
     <ClInclude Include="IntrodutionApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Dependencies\gizmos\Gizmos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Dependencies\glcore\gl_core_4_4.h">
       <Filter>gl_core</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

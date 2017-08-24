@@ -1,9 +1,9 @@
 #include "IntrodutionApp.h"
 #include "Gizmos.h"
 #include <GLFW/glfw3.h>
-#include "Camera.h"
+#include "CameraApp.h"
 
-IntrodutionApp::IntrodutionApp()
+IntrodutionApp::IntrodutionApp(): cam(nullptr)
 {
 }
 
@@ -14,6 +14,8 @@ IntrodutionApp::~IntrodutionApp()
 
 void IntrodutionApp::startup()
 {
+	cam = new CameraApp();
+	cam->setLookAt(vec3(10, 10, 10), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
 void IntrodutionApp::shutdown()
@@ -26,7 +28,6 @@ void IntrodutionApp::update(float)
 
 void IntrodutionApp::draw()
 {
-	Camera* cam = new Camera();
 	mat4 s1 = mat4(1);
 	vec4 center = vec4(0, 5, 0, 1);
 	vec4 color = vec4(0, 0, 0, 0);
@@ -42,7 +43,7 @@ void IntrodutionApp::draw()
 		Gizmos::addLine(vec3(10, 0, -10 + i),
 			vec3(-10, 0, -10 + i), i == 10 ? white : black);
 	}
-	cam->setLookAt(vec3(10, 10, 10), vec3(0, 0, 0), vec3(0, 1, 0));
+	
 	Gizmos::draw(cam->getProjectionView());
 }
 
