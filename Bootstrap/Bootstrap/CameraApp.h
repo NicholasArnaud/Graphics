@@ -3,6 +3,7 @@
 #include <mat4x4.hpp>
 #include "Application.h"
 #include "Transform.h"
+#include <detail/_noise.hpp>
 using namespace glm;
 
 
@@ -24,14 +25,18 @@ public:
 	float deltaTime;
 	float prevTime;
 	float currTime;
+	
+
 
 private:
 	CameraApp* cam;
 	Transform* m_transform;
+	
 	mat4 m_worldTransform;
 	mat4 m_viewTransform;
 	mat4 m_projectionTransform;
 	mat4 m_projectionViewTransform;
+	mat4 m_positionTransform;
 	void updateProjectionViewTransform();
 
 

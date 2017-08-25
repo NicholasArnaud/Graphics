@@ -6,10 +6,15 @@
 #include <glm.hpp>
 #include "Gizmos.h"
 #include "Transform.h"
+#include <iostream>
 
 Transform* sunTransform;
-CameraApp::CameraApp() :rt(0), deltaTime(0),prevTime(0),currTime(0), cam(nullptr), m_worldTransform(mat4(1)), m_viewTransform(mat4(1)), m_projectionTransform(mat4(1)), m_projectionViewTransform(mat4(1))
+Transform* mercuryTransform;
+Transform* venusTransform;
+Transform* earthTransform;
+CameraApp::CameraApp() :rt(0), deltaTime(0), prevTime(0), currTime(0), cam(nullptr), m_worldTransform(mat4(1)), m_viewTransform(mat4(1)), m_projectionTransform(mat4(1)), m_projectionViewTransform(mat4(1))
 {
+	m_transform = new Transform();
 	setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
 	//setOrtho(-15, 15, -15, 15, -11, 50);
 }
@@ -57,7 +62,7 @@ void CameraApp::setPerspective(float fieldOfView, float aspectRatio, float m_nea
 	assert(copy == m_projectionTransform);
 }
 
-void CameraApp::setOrtho(float m_left, float m_right, float m_bottom, float m_top,float m_near, float m_far)
+void CameraApp::setOrtho(float m_left, float m_right, float m_bottom, float m_top, float m_near, float m_far)
 {
 	vec4 xCol = vec4(2.f / (m_right - m_left), 0, 0, 0);
 	vec4 yCol = vec4(0, 2.f / (m_top - m_bottom), 0, 0);
@@ -92,10 +97,10 @@ void CameraApp::setLookAt(vec3 eye, vec3 centre, vec3 up)
 
 void CameraApp::setPosition(vec3 position)
 {
-	m_transform = new Transform();
-	m_transform->rotate(glm::pi<float>() * .25f, ZAXIS);
-
-	m_viewTransform = translate(m_worldTransform, position);
+	m_worldTransform[3] = vec4(position, 1);
+	m_transform->rotate(pi<float>() * .25f, ZAXIS);
+	m_transform->translate(position);
+	m_viewTransform = inverse(m_worldTransform);
 }
 
 
@@ -113,8 +118,11 @@ void CameraApp::startup()
 {
 	cam = new CameraApp();
 	sunTransform = new Transform();
+	mercuryTransform = new Transform();
+	venusTransform = new Transform();
+	earthTransform = new Transform();
 	cam->setLookAt(vec3(10, 10, 10), vec3(0, 0, 0), vec3(0, 1, 0));
-	
+
 }
 
 void CameraApp::shutdown()
@@ -124,23 +132,67 @@ void CameraApp::shutdown()
 void CameraApp::update(float deltaTime)
 {
 	rt += deltaTime;
-	sunTransform->rotate(rt, YAXIS);
+	sunTransform->m_world = mat4(1);
+	sunTransform->rotate(rt *.1f, YAXIS);
+	mercuryTransform->m_world = rotate(rt, vec3(0, 1, 0))*sunTransform->m_world* translate(vec3(0, 0, 5))* rotate(rt*.5f, vec3(0, 1, 0));
+	venusTransform->m_world = sunTransform->m_world * translate(vec3(0, 0, 7)) * rotate(rt*.3f, vec3(0, 1, 0));
+	earthTransform->m_world = sunTransform->m_world * translate(vec3(0, 0, 8)) * rotate(rt*.28f, vec3(0, 1, 0));
 
 	if (glfwGetKey(m_window, GLFW_KEY_W))
-		cam->setPosition(getWorldTransform()[3] -= getWorldTransform()[2]);
+		cam->setPosition(cam->getWorldTransform()[3] -= cam->getWorldTransform()[2] * .2f);
+	if (glfwGetKey(m_window, GLFW_KEY_S))
+		cam->setPosition(cam->getWorldTransform()[3] += cam->getWorldTransform()[2] * .2f);
+	if (glfwGetKey(m_window, GLFW_KEY_A))
+		cam->setPosition(cam->getWorldTransform()[3] -= cam->getWorldTransform()[0] * .2f);
+	if (glfwGetKey(m_window, GLFW_KEY_D))
+		cam->setPosition(cam->getWorldTransform()[3] += cam->getWorldTransform()[0] * .2f);
 
+	static bool sbMouseButtonDown = false;
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 
+		static double siPrevMouseX = 0;
+		static double siPrevMouseY = 0;
 
+		if (sbMouseButtonDown == false)
+		{
+			sbMouseButtonDown = true;
+			glfwGetCursorPos(m_window, &siPrevMouseX, &siPrevMouseY);
+		}
+
+		double mouseX = 0, mouseY = 0;
+		glfwGetCursorPos(m_window, &mouseX, &mouseY);
+
+		double iDeltaX = mouseX - siPrevMouseX;
+		double iDeltaY = mouseY - siPrevMouseY;
+
+		siPrevMouseX = mouseX;
+		siPrevMouseY = mouseY;
+
+		mat4 rEle = rotate((float)iDeltaX * 1 / 800, vec3(0, 1, 0));
+		mat4 rAzi = rotate((float)iDeltaY * 1 / 800, vec3(1, 0, 0));
+		cam->m_worldTransform = rEle* rAzi * cam->m_worldTransform;
+		cam->m_viewTransform = inverse(cam->m_worldTransform);
+		std::cout << "delta mouse:: " << to_string(vec2(iDeltaX, iDeltaY)) << std::endl;
+	}
 }
 
 void CameraApp::draw()
 {
-	mat4 s1 = mat4(1);
+	mat4 s1 = mat4(sunTransform->m_world);
+	mat4 s2 = mat4(mercuryTransform->m_world);
+	mat4 s3 = mat4(venusTransform->m_world);
+	mat4 s4 = mat4(earthTransform->m_world);
 	vec4 center = vec4(0, 5, 0, 1);
 	vec4 color = vec4(0, 0, 0, 0);
 	Gizmos::clear();
-	Gizmos::addSphere(s1[3], 1, 20, 20, color);
-	Gizmos::addSphere(sunTransform->m_world[3], 1, 20, 20, vec4(1.f,1.f,0.f, 1.f), &sunTransform->m_world);
+	Gizmos::addSphere(sunTransform->m_world[3], 4.32288f, 20, 20, vec4(1.f, 1.f, 0.f, 1.f), &sunTransform->m_world);
+	Gizmos::addSphere(mercuryTransform->m_world[3], .02439f, 20, 20, vec4(1.f, .5f, .1f, 1.f), &mercuryTransform->m_world);
+	Gizmos::addSphere(venusTransform->m_world[3], .06378f, 20, 20, vec4(1.2f, .5f, .1f, 1.f), &venusTransform->m_world);
+	Gizmos::addSphere(earthTransform->m_world[3], .06378f, 20, 20, vec4(0, 0, 1, 0), &earthTransform->m_world);
+	Gizmos::addTransform(s1, 1.5f);
+	Gizmos::addTransform(s2, .5f);
+	Gizmos::addTransform(s3, .5f);
+	Gizmos::addTransform(s4, .5f);
 	vec4 white(1);
 	vec4 black(0, 0, 0, 1);
 	for (int i = 0; i < 21; ++i)
@@ -184,12 +236,18 @@ void CameraApp::run(const char * title, unsigned int width, unsigned int height,
 		deltaTime = currTime - prevTime;
 		prevTime = currTime;
 		glfwPollEvents();
+
+
+
+
+
 		update(deltaTime);
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		draw();
 
-		
-		
+
+
 		glfwSwapBuffers(m_window);
 		m_gameover = (glfwWindowShouldClose(m_window) == GLFW_TRUE);
 	}
