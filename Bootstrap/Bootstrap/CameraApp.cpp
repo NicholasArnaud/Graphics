@@ -146,6 +146,16 @@ void CameraApp::update(float deltaTime)
 		cam->setPosition(cam->getWorldTransform()[3] -= cam->getWorldTransform()[0] * .2f);
 	if (glfwGetKey(m_window, GLFW_KEY_D))
 		cam->setPosition(cam->getWorldTransform()[3] += cam->getWorldTransform()[0] * .2f);
+	if(glfwGetKey(m_window, GLFW_KEY_P))
+	{
+		cam->setPerspective(pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
+	}
+		
+	if (glfwGetKey(m_window, GLFW_KEY_O))
+	{
+		cam->setOrtho(-15, 15, -15, 15, -11, 50);
+	}
+		
 
 	static bool sbMouseButtonDown = false;
 	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
