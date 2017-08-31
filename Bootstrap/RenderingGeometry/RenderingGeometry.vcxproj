@@ -18,39 +18,14 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Dependencies\imgui\imgui.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="CameraApp.cpp" />
-    <ClCompile Include="Gizmos.cpp" />
-    <ClCompile Include="gl_core_4_4.c" />
-    <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="IntroductionApp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_textedit.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="CameraApp.h" />
-    <ClInclude Include="Gizmos.h" />
-    <ClInclude Include="gl_core_4_4.h" />
-    <ClInclude Include="imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="IntroductionApp.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CEC9CF4C-0209-43B8-824B-30501F0B6FF4}</ProjectGuid>
-    <RootNamespace>Bootstrap</RootNamespace>
+    <ProjectGuid>{7B66C8D2-7FC9-4414-9012-4153020E1AEF}</ProjectGuid>
+    <RootNamespace>RenderingGeometry</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -94,10 +69,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Dependencies\$(ProjectName)\</OutDir>
-    <SourcePath>$(VC_SourcePath);$(ProjectDir)</SourcePath>
+    <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Bootstrap;$(SolutionDir)Dependencies\imgui;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\Bootstrap;$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -106,8 +79,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Bootstrap.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -143,6 +115,13 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="GeometryApplication.cpp" />
+    <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeometryApplication.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

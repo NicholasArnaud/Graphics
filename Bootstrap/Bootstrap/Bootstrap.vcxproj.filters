@@ -16,9 +16,6 @@
     <Filter Include="Imgui">
       <UniqueIdentifier>{21fd1967-a85c-4cae-b6e3-38bc9cdc5a45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gl_core">
-      <UniqueIdentifier>{898622c3-a259-4271-ae0c-a4141b5474ea}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Dependencies\imgui\imgui.cpp">
@@ -30,28 +27,22 @@
     <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="gl_core_4_4.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IntrodutionApp.cpp">
+    <ClCompile Include="Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui_impl_glfw_gl3.cpp">
-      <Filter>Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Dependencies\gizmos\Gizmos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Dependencies\glcore\gl_core_4_4.c">
-      <Filter>gl_core</Filter>
+    <ClCompile Include="IntroductionApp.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CameraApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,22 +65,22 @@
     <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h">
       <Filter>Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="gl_core_4_4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IntrodutionApp.h">
+    <ClInclude Include="Gizmos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Dependencies\gizmos\Gizmos.h">
+    <ClInclude Include="imgui_impl_glfw_gl3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Dependencies\glcore\gl_core_4_4.h">
-      <Filter>gl_core</Filter>
+    <ClInclude Include="IntroductionApp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CameraApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "IntrodutionApp.h"
+#include "IntroductionApp.h"
 #include "Gizmos.h"
 #include <GLFW/glfw3.h>
 #include "CameraApp.h"

@@ -1,12 +1,15 @@
 #include "gl_core_4_4.h"
-#include <GLFW/glfw3.h>
-#include "CameraApp.h"
+#include <GLFW\glfw3.h>
+
 #include <ext.hpp>
 #include <assert.h>
 #include <glm.hpp>
+#include <iostream>
+
 #include "Gizmos.h"
 #include "Transform.h"
-#include <iostream>
+#include "CameraApp.h"
+
 
 Transform* sunTransform;
 Transform* mercuryTransform;

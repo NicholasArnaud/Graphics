@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Transform.h"
 #include <detail/_noise.hpp>
+class GLFWwindow;
 using namespace glm;
 
 
