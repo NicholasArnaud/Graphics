@@ -20,7 +20,7 @@ GeometryApplication::~GeometryApplication()
 
 void GeometryApplication::startup()
 {
-	camera->setLookAt(glm::vec3(1, 1, 3), glm::vec3(1, 1, 0), glm::vec3(0, 1, 0));
+	camera->setLookAt(glm::vec3(0, 0, 1), glm::vec3(1), glm::vec3(0, 1, 0));
 
 
 	const char* vsSource = "#version 410\n \
@@ -86,8 +86,10 @@ void GeometryApplication::draw()
 
 void GeometryApplication::GenObject(int numb)
 {
-	if(numb == 0)
+	if (numb == 0)
 	{
+		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
 		//wierd example shape
 		Vertex a = { glm::vec4(-1, 0, 0, 1) , glm::vec4(.1, .1, .1, 1) };//bl	
 		Vertex b = { glm::vec4(1, 0, 0, 1) , glm::vec4(.1, .1, .1, 1) };//br
@@ -102,21 +104,24 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if(numb == 1)
+	if (numb == 1)
 	{
+		//changed cam perspective to center object on the screen
+		camera->setLookAt(glm::vec3(0, 0.5f, 3), glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0));
+
 		//2D Right Triangle
 		Vertex a = { glm::vec4(-1, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; //bl
 		Vertex b = { glm::vec4(1, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //br
 		Vertex c = { glm::vec4(0, 1, 0, 1), glm::vec4(0, 0, 1, 1) }; //tr
-		std::vector<Vertex> vertices{ a, b, c};
-		std::vector<unsigned int> indices{0, 1, 2};
+		std::vector<Vertex> vertices{ a, b, c };
+		std::vector<unsigned int> indices{ 0, 1, 2 };
 		mesh->initialize(vertices, indices);
 		mesh->create_buffers();
 	}
 
-	if(numb == 2)
+	if (numb == 2)
 	{
-		
+
 		//2D Square w Mid
 		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; //bl
 		Vertex b = { glm::vec4(1, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //br
@@ -133,7 +138,7 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if(numb == 3)
+	if (numb == 3)
 	{
 		//change cam perspective to see all points
 		camera->setLookAt(glm::vec3(2, 2, 5), glm::vec3(1, 1, 0), glm::vec3(0, 1, 0));
@@ -165,8 +170,45 @@ void GeometryApplication::GenObject(int numb)
 			1, 5, 6, //right
 			1, 6, 2, //right
 
-			};
+		};
 		mesh->initialize(vertices, indices);
+		mesh->create_buffers();
+	}
+
+	if (numb == 4)
+	{
+		camera->setLookAt(glm::vec3(15, 15, 45), glm::vec3(15, 15, 0), glm::vec3(0, 1, 0));
+
+		std::vector<unsigned int> indices{0};
+		std::vector<Vertex> l;
+		int xrows = 25;
+		int yrows = 25;
+
+		for (int x = 0; x <= xrows; x++)
+		{
+			for (int y = 0; y <= yrows; y++)
+			{
+				Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+				
+				l.push_back(g);
+			}
+		}
+		for (int x = 0; x <= xrows; x++)
+		{
+			for (int y = 0; y <= yrows; y++)
+			{
+				indices.push_back(x *yrows + y);
+				indices.push_back((x + 1) * yrows + y);
+				indices.push_back((x + 1) * yrows+ (y + 1));
+
+				indices.push_back(x *yrows + y);
+				indices.push_back((x + 1) * yrows + y + 1);
+				indices.push_back( x* yrows +(y + 1));
+				
+			}
+		}
+		
+		mesh->initialize(l, indices);
 		mesh->create_buffers();
 	}
 }
@@ -186,7 +228,7 @@ void GeometryApplication::run(const char* title, unsigned width, unsigned height
 	}
 
 	startup();
-	GenObject(1);
+	GenObject(4);
 
 
 	glUseProgram(m_programID);
