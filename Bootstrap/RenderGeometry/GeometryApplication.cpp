@@ -80,6 +80,7 @@ void GeometryApplication::draw()
 	unsigned int projectionViewTransform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewTransform, 1, false, value_ptr(camera->getProjectionView()));
 	glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, nullptr);
+	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	mesh->unbind();
 }
@@ -179,7 +180,7 @@ void GeometryApplication::GenObject(int numb)
 	{
 		camera->setLookAt(glm::vec3(15, 15, 45), glm::vec3(15, 15, 0), glm::vec3(0, 1, 0));
 
-		std::vector<unsigned int> indices{0};
+		std::vector<unsigned int> indices{ 0 };
 		std::vector<Vertex> l;
 		int xrows = 25;
 		int yrows = 25;
@@ -189,7 +190,7 @@ void GeometryApplication::GenObject(int numb)
 			for (int y = 0; y <= yrows; y++)
 			{
 				Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
-				
+
 				l.push_back(g);
 			}
 		}
@@ -199,15 +200,54 @@ void GeometryApplication::GenObject(int numb)
 			{
 				indices.push_back(x *yrows + y);
 				indices.push_back((x + 1) * yrows + y);
-				indices.push_back((x + 1) * yrows+ (y + 1));
+				indices.push_back((x + 1) * yrows + (y + 1));
 
 				indices.push_back(x *yrows + y);
 				indices.push_back((x + 1) * yrows + y + 1);
-				indices.push_back( x* yrows +(y + 1));
-				
+				indices.push_back(x* yrows + (y + 1));
+
 			}
 		}
-		
+
+		mesh->initialize(l, indices);
+		mesh->create_buffers();
+	}
+
+	if (numb == 5)
+	{
+		//Centered camera on center
+		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+		//Misshapen Circle
+		int np = 50;
+		int rad = 1;
+		std::vector<Vertex> l;
+
+
+#define PI 3.141592653
+		for (int i = 0; i < np; i++)
+		{
+			float slice = PI / (np - 1);
+			float Theta = i * slice;
+			float x = rad * cos(Theta);
+			float y = rad * sin(Theta);
+			Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+			l.push_back(g);
+			float xr = rad * (-1 * cos(Theta));
+			float yr = rad * (-1 * sin(Theta));
+			Vertex h = { glm::vec4(xr, yr, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+			l.push_back(h);
+		}
+		std::vector<unsigned int> indices;
+		int i = 0;
+		for(int k = 0; k<=np*2; k++)
+		{
+			indices.push_back(0);
+			indices.push_back(i++);
+			indices.push_back(i += 1);
+			i--;
+		}
+
 		mesh->initialize(l, indices);
 		mesh->create_buffers();
 	}
