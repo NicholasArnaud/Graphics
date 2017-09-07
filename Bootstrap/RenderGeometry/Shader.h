@@ -1,4 +1,5 @@
 #pragma once
+
 class Shader
 {
 public:
@@ -9,7 +10,7 @@ public:
 	void load(const char * filename, unsigned int type);
 	void attach();
 	void defaultLoad();
-	//void load();
+
 	unsigned int getUniform(const char *);
 	unsigned int m_vertexShader;
 	unsigned int m_fragmentShader;

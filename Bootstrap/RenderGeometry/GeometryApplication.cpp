@@ -2,6 +2,7 @@
 #include "gl_core_4_4.h"
 #include <GLFW/glfw3.h>
 #include "Camera.h"
+#include "Shader.h"
 #include <cstdio>
 #include <wingdi.h>
 
@@ -10,7 +11,7 @@ GeometryApplication::GeometryApplication() : m_programID(0), mesh(nullptr)
 {
 	camera = new Camera();
 	mesh = new Mesh();
-
+	shader = new Shader();
 	camera->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
 }
 
@@ -34,7 +35,7 @@ void GeometryApplication::startup()
 	in vec4 vColour; \
 	out vec4 fragColour;\
 	void main() { fragColour = vColour; }";
-	int success = GL_FALSE;
+
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -48,6 +49,7 @@ void GeometryApplication::startup()
 	glAttachShader(m_programID, fragmentShader);
 	glLinkProgram(m_programID);
 
+	int success = GL_FALSE;
 	glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
 	if (success == GL_FALSE)
 	{
@@ -60,7 +62,7 @@ void GeometryApplication::startup()
 		printf("%s\n", infoLog);
 		delete[] infoLog;
 	}
-
+	//shader->defaultLoad();
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 }
@@ -178,12 +180,12 @@ void GeometryApplication::GenObject(int numb)
 
 	if (numb == 4)
 	{
-		camera->setLookAt(glm::vec3(15, 15, 45), glm::vec3(15, 15, 0), glm::vec3(0, 1, 0));
-
+		camera->setLookAt(glm::vec3(0, 1, 10), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+		//Triangle strips
 		std::vector<unsigned int> indices{ 0 };
 		std::vector<Vertex> l;
-		int xrows = 25;
-		int yrows = 25;
+		int xrows = 1;
+		int yrows = 4;
 
 		for (int x = 0; x <= xrows; x++)
 		{
@@ -218,37 +220,38 @@ void GeometryApplication::GenObject(int numb)
 		//Centered camera on center
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-		//Misshapen Circle
-		int np = 50;
+		
+		int np = 3;
 		int rad = 1;
-		std::vector<Vertex> l;
-
-
+		std::vector<Vertex> points;
 #define PI 3.141592653
+		//half Circle
 		for (int i = 0; i < np; i++)
 		{
 			float slice = PI / (np - 1);
 			float Theta = i * slice;
-			float x = rad * cos(Theta);
-			float y = rad * sin(Theta);
+			float x = rad * sin(Theta);
+			float y = rad * cos(Theta);
 			Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
-			l.push_back(g);
-			float xr = rad * (-1 * cos(Theta));
-			float yr = rad * (-1 * sin(Theta));
-			Vertex h = { glm::vec4(xr, yr, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
-			l.push_back(h);
-		}
-		std::vector<unsigned int> indices;
-		int i = 0;
-		for(int k = 0; k<=np*2; k++)
-		{
-			indices.push_back(0);
-			indices.push_back(i++);
-			indices.push_back(i += 1);
-			i--;
+			printf("Points : %f, %f, %f \n",g.position.x, g.position.y, g.position.z);
+			points.push_back(g);
 		}
 
-		mesh->initialize(l, indices);
+		//For complete Circle
+		float phi = 2.f* PI / (np - 1);
+		for(int l = 0; l<np; l++)
+		{
+			float newX = rad* points[l].position.x * cos(phi) + points[l].position.z* sin(phi);
+			float newY = rad* points[l].position.y;
+			float newZ = rad* points[l].position.z * cos(phi) - points[l].position.x * sin(phi);
+			Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+			printf("Points : %f, %f, %f \n", n.position.x, n.position.y, n.position.z);
+			points.push_back(n);
+		}
+		std::vector<unsigned int> indices{
+		0,1,2,3,0};
+
+		mesh->initialize(points, indices);
 		mesh->create_buffers();
 	}
 }
@@ -268,7 +271,7 @@ void GeometryApplication::run(const char* title, unsigned width, unsigned height
 	}
 
 	startup();
-	GenObject(4);
+	GenObject(5);
 
 
 	glUseProgram(m_programID);

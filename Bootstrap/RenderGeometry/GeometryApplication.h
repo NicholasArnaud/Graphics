@@ -1,6 +1,7 @@
 #pragma once
 #include "Application.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 class Camera;
 
@@ -12,7 +13,8 @@ public:
 	unsigned int m_programID;
 	Camera* camera;
 	Mesh* mesh;
-	
+	Shader* shader;
+
 	void GenObject(int numb);
 	void run(const char* title, unsigned width, unsigned height, bool fullscreen) override;
 protected:
