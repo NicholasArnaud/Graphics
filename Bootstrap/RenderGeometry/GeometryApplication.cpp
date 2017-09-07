@@ -243,7 +243,7 @@ void GeometryApplication::GenObject(int numb)
 		{
 			float newX = rad* points[l].position.x * cos(phi) + points[l].position.z* sin(phi);
 			float newY = rad* points[l].position.y;
-			float newZ = rad* points[l].position.z * cos(phi) - points[l].position.x * sin(phi);
+			float newZ = rad* points[l].position.z * sin(phi) - points[l].position.x * cos(phi);
 			Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
 			printf("Points : %f, %f, %f \n", n.position.x, n.position.y, n.position.z);
 			points.push_back(n);
