@@ -59,8 +59,6 @@ void Camera::setLookAt(glm::vec3 eye, glm::vec3 centre, glm::vec3 up)
 void Camera::setPosition(glm::vec3 position)
 {
 	m_worldTransform[3] = glm::vec4(position, 1);
-	m_transform->rotate(glm::pi<float>() * .25f, ZAXIS);
-	m_transform->translate(position);
 	m_viewTransform = glm::inverse(m_worldTransform);
 }
 

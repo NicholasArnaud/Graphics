@@ -42,7 +42,7 @@ void Transform::rotate(float radians, Axis rotationAxis)
 		break;
 	}
 
-	m_rotation = glm::mat4(
+	this->m_rotation = glm::mat4(
 		glm::vec4(xaxis, 1),
 		glm::vec4(yaxis, 1),
 		glm::vec4(zaxis, 1),
