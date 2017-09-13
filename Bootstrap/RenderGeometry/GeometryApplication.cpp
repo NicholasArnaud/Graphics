@@ -86,9 +86,9 @@ void GeometryApplication::draw()
 	mesh->unbind();
 }
 
-void GeometryApplication::GenObject(int numb)
+void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians =3)
 {
-	if (numb == 0)
+	if (select == 0)
 	{
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
@@ -106,7 +106,7 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if (numb == 1)
+	if (select == 1)
 	{
 		//changed cam perspective to center object on the screen
 		camera->setLookAt(glm::vec3(0, 0.5f, 3), glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0));
@@ -121,7 +121,7 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if (numb == 2)
+	if (select == 2)
 	{
 
 		//2D Square w Mid
@@ -140,7 +140,7 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if (numb == 3)
+	if (select == 3)
 	{
 		//change cam perspective to see all points
 		camera->setLookAt(glm::vec3(2, 2, 5), glm::vec3(1, 1, 0), glm::vec3(0, 1, 0));
@@ -177,41 +177,14 @@ void GeometryApplication::GenObject(int numb)
 		mesh->create_buffers();
 	}
 
-	if (numb == 4)
-	{
-		camera->setLookAt(glm::vec3(0, 1, 10), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
-		//Triangle strips
-		std::vector<unsigned int> indices{ 0 };
-		
-		int xrows = 2;
-		int yrows = 2;
-		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; //bl
-		Vertex b = { glm::vec4(10, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //br
-		Vertex c = { glm::vec4(10, 10, 0, 1), glm::vec4(0, 0, 1, 1) }; //tr
-		Vertex d = { glm::vec4(0, 10, 0, 1), glm::vec4(1, 1, 0, 1) }; //tl
-		
-		std::vector<Vertex> points{a, b, d, c};
-		for (int i = 0; i <= xrows; i++)
-		{
-			for (int j = 0; j < yrows; j++)
-			{
-				indices.push_back(i* xrows + j); //btm left
-				indices.push_back(i* xrows + j + xrows); //btm right
-			}
-		}
-
-		mesh->initialize(points, indices);
-		mesh->create_buffers();
-	}
-
-	if (numb == 5)
+	if (select == 4)
 	{
 		//Centered camera on center
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
 
-		int np = 25;
-		int nm = 25;
+		int np = numPoints;
+		int nm = numMedians;
 		int rad = 1;
 		std::vector<Vertex> points;
 		std::vector<unsigned int> indices;
@@ -263,7 +236,6 @@ void GeometryApplication::GenObject(int numb)
 void GeometryApplication::run(const char* title, unsigned width, unsigned height, bool fullscreen)
 {
 	glfwInit();
-
 	float currTime = glfwGetTime();
 	float prevTime = 0;
 	float deltaTime = currTime - prevTime;
@@ -281,13 +253,14 @@ void GeometryApplication::run(const char* title, unsigned width, unsigned height
 	}
 
 	startup();
-	GenObject(4);
+	GenObject(4, 12, 12);
 
 
 	glUseProgram(m_programID);
 
 	glClearColor(0, 0, 0, 1.0f);
 	glEnable(GL_DEPTH_TEST);
+
 	while (!m_gameover)
 	{
 		currTime = glfwGetTime();

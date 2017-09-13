@@ -15,7 +15,7 @@ public:
 	Mesh* mesh;
 	Shader* shader;
 
-	void GenObject(int numb);
+	void GenObject(int select, int numPoints, int nummedians);
 	void run(const char* title, unsigned width, unsigned height, bool fullscreen) override;
 protected:
 	void startup() override;
