@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Filer.h" />
     <ClInclude Include="GeometryApplication.h" />
     <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="Mesh.h" />

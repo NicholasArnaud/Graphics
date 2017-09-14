@@ -15,7 +15,7 @@ Application::~Application()
 
 void Application::run(const char* title, unsigned int width, unsigned int height, bool fullscreen)
 {
-	startup();
+	
 	if (glfwInit() == GL_FALSE)
 		return;
 
@@ -38,6 +38,7 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 	double currTime = 0;
 	double deltaTime = 0;
 
+	startup();
 	while (!m_gameover)
 	{
 		currTime = glfwGetTime();
@@ -48,8 +49,7 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		draw();
-		
 		glfwSwapBuffers(m_window);
-		m_gameover = (glfwWindowShouldClose(m_window) == GLFW_TRUE);
+		m_gameover = glfwWindowShouldClose(m_window) == GLFW_TRUE;
 	}
 }

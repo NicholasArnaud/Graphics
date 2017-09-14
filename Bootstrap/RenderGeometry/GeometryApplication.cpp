@@ -3,14 +3,16 @@
 #include <GLFW/glfw3.h>
 #include "Camera.h"
 #include "Shader.h"
+#include <wingdi.h>
 #define PI 3.141592653
 
-GeometryApplication::GeometryApplication() : m_programID(0), mesh(nullptr)
+GeometryApplication::GeometryApplication() : m_programID(0), mesh(nullptr), shader(nullptr)
 {
+	GLFWwindow * m_window;
 	camera = new Camera();
 	mesh = new Mesh();
 	shader = new Shader();
-	camera->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 0.1f, 1000.f);
+	camera->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 1.0f, 1000.f);
 }
 
 GeometryApplication::~GeometryApplication()
@@ -19,74 +21,81 @@ GeometryApplication::~GeometryApplication()
 
 void GeometryApplication::startup()
 {
+	
 	camera->setLookAt(glm::vec3(0, 0, 1), glm::vec3(1), glm::vec3(0, 1, 0));
+	
+	shader->load("Vertex.vert", GL_VERTEX_SHADER);
+	shader->load("Fragment.frag",GL_FRAGMENT_SHADER);
 
-
-	const char* vsSource = "#version 410\n \
-	layout(location=0) in vec4 position; \
-	layout(location=1) in vec4 colour; \
-	out vec4 vColour; \
-	uniform mat4 projectionViewWorldMatrix; \
-	void main() { vColour = colour; gl_Position =\
-	projectionViewWorldMatrix * position; }";
-	const char* fsSource = "#version 410\n \
-	in vec4 vColour; \
-	out vec4 fragColour;\
-	void main() { fragColour = vColour; }";
-
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	glShaderSource(vertexShader, 1, (const char**)&vsSource, 0);
-	glCompileShader(vertexShader);
-	glShaderSource(fragmentShader, 1, (const char**)&fsSource, 0);
-	glCompileShader(fragmentShader);
-
-	m_programID = glCreateProgram();
-	glAttachShader(m_programID, vertexShader);
-	glAttachShader(m_programID, fragmentShader);
-	glLinkProgram(m_programID);
-
-	int success = GL_FALSE;
-	glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
-	{
-		int infoLogLength = 0;
-		glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char* infoLog = new char[infoLogLength];
-
-		glGetProgramInfoLog(m_programID, infoLogLength, nullptr, infoLog);
-		printf("ERROR: Failed to link shader program! \n");
-		printf("%s\n", infoLog);
-		delete[] infoLog;
-	}
-	//shader->defaultLoad();
-	glDeleteShader(fragmentShader);
-	glDeleteShader(vertexShader);
+	GenObject(4, 12, 12);
 }
 
 void GeometryApplication::shutdown()
 {
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
+glm::mat4 sphere = glm::mat4(1);
 void GeometryApplication::update(float)
 {
+	glfwPollEvents();
+	if (glfwGetKey(m_window, GLFW_KEY_W))
+		camera->setPosition(camera->getWorldTransform()[3] -= camera->getWorldTransform()[2] * .2f);		
+	if (glfwGetKey(m_window, GLFW_KEY_S))
+		camera->setPosition(camera->getWorldTransform()[3] += camera->getWorldTransform()[2] * .2f);		
+	if (glfwGetKey(m_window, GLFW_KEY_A))
+		camera->setPosition(camera->getWorldTransform()[3] -= camera->getWorldTransform()[0] * .2f);		
+	if (glfwGetKey(m_window, GLFW_KEY_D))
+		camera->setPosition(camera->getWorldTransform()[3] += camera->getWorldTransform()[0] * .2f);
 
+	static bool sbMouseButtonDown = false;
+	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+
+		static double siPrevMouseX = 0;
+		static double siPrevMouseY = 0;
+
+		if (sbMouseButtonDown == false)
+		{
+			sbMouseButtonDown = true;
+			glfwGetCursorPos(m_window, &siPrevMouseX, &siPrevMouseY);
+		}
+
+		double mouseX = 0, mouseY = 0;
+		glfwGetCursorPos(m_window, &mouseX, &mouseY);
+
+		double iDeltaX = mouseX - siPrevMouseX;
+		double iDeltaY = mouseY - siPrevMouseY;
+
+		siPrevMouseX = mouseX;
+		siPrevMouseY = mouseY;
+
+		glm::mat4 rEle = rotate((float)iDeltaX * 1 / 800, glm::vec3(0, 1, 0));
+		glm::mat4 rAzi = rotate((float)iDeltaY * 1 / 800, glm::vec3(1, 0, 0));
+		camera->m_worldTransform = rEle* rAzi * camera->m_worldTransform;
+		camera->m_viewTransform = inverse(camera->m_worldTransform);
+	}
 }
 
 void GeometryApplication::draw()
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+	//FIRST OBJECT
+	shader->bind();
 	mesh->bind();
 
-	unsigned int projectionViewTransform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewTransform, 1, false, value_ptr(camera->getProjectionView()));
+	unsigned int projectionViewTransform = glGetUniformLocation(shader->program(), "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projectionViewTransform, 1, false, value_ptr(camera->getProjectionView() * sphere));
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawElements(GL_TRIANGLE_STRIP, mesh->index_count, GL_UNSIGNED_INT, nullptr);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	mesh->unbind();
+	shader->unbind();
 }
 
-void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians =3)
+void GeometryApplication::GenObject(int select, int numP =3, int numM =3)
 {
 	if (select == 0)
 	{
@@ -183,12 +192,14 @@ void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
 
-		int np = numPoints;
-		int nm = numMedians;
+		int np = numP;
+		int nm = numM;
 		int rad = 1;
 		std::vector<Vertex> points;
 		std::vector<unsigned int> indices;
 
+		if (np < 3) np = 3;
+		if (nm < 3) nm = 3;
 
 		//For Half Circle
 		for (int i = 0; i < np; i++)
@@ -197,7 +208,7 @@ void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians
 			float Theta = i * slice;
 			float x = rad * sin(Theta);
 			float y = rad * cos(Theta);
-			Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+			Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(0.0f, 0.0f, 0.0f, 1) };
 			printf("Points %i: %f, %f, %f \n", points.size(), g.position.x, g.position.y, g.position.z);
 			points.push_back(g);
 		}
@@ -212,7 +223,7 @@ void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians
 				float newX = rad* points[k].position.x * cos(phi* l);
 				float newY = rad* points[k].position.y;
 				float newZ = rad* points[k].position.x * -sin(phi* l);
-				Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(0.5f, 0.5f, 0.5f, 1) };
+				Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(0.0f, 0.0f, 0.0f, 1) };
 				printf("Points %i: %f, %f, %f \n", points.size(), n.position.x, n.position.y, n.position.z);
 				points.push_back(n);
 			}
@@ -230,84 +241,5 @@ void GeometryApplication::GenObject(int select, int numPoints =3, int numMedians
 
 		mesh->initialize(points, indices);
 		mesh->create_buffers();
-	}
-}
-
-void GeometryApplication::run(const char* title, unsigned width, unsigned height, bool fullscreen)
-{
-	glfwInit();
-	float currTime = glfwGetTime();
-	float prevTime = 0;
-	float deltaTime = currTime - prevTime;
-	glfwPollEvents();
-
-	GLFWwindow* m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-
-	glfwMakeContextCurrent(m_window);
-
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
-	{
-		glfwDestroyWindow(m_window);
-		glfwTerminate();
-		return;
-	}
-
-	startup();
-	GenObject(4, 12, 12);
-
-
-	glUseProgram(m_programID);
-
-	glClearColor(0, 0, 0, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
-	while (!m_gameover)
-	{
-		currTime = glfwGetTime();
-		deltaTime = currTime - prevTime;
-		prevTime = currTime;
-		glfwPollEvents();
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		if (glfwGetKey(m_window, GLFW_KEY_W))
-			camera->setPosition(camera->getWorldTransform()[3] -= camera->getWorldTransform()[2] * .2f);
-		if (glfwGetKey(m_window, GLFW_KEY_S))
-			camera->setPosition(camera->getWorldTransform()[3] += camera->getWorldTransform()[2] * .2f);
-		if (glfwGetKey(m_window, GLFW_KEY_A))
-			camera->setPosition(camera->getWorldTransform()[3] -= camera->getWorldTransform()[0] * .2f);
-		if (glfwGetKey(m_window, GLFW_KEY_D))
-			camera->setPosition(camera->getWorldTransform()[3] += camera->getWorldTransform()[0] * .2f);
-
-
-		static bool sbMouseButtonDown = false;
-		if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-
-			static double siPrevMouseX = 0;
-			static double siPrevMouseY = 0;
-
-			if (sbMouseButtonDown == false)
-			{
-				sbMouseButtonDown = true;
-				glfwGetCursorPos(m_window, &siPrevMouseX, &siPrevMouseY);
-			}
-
-			double mouseX = 0, mouseY = 0;
-			glfwGetCursorPos(m_window, &mouseX, &mouseY);
-
-			double iDeltaX = mouseX - siPrevMouseX;
-			double iDeltaY = mouseY - siPrevMouseY;
-
-			siPrevMouseX = mouseX;
-			siPrevMouseY = mouseY;
-
-			glm::mat4 rEle = rotate((float)iDeltaX * 1 / 800, glm::vec3(0, 1, 0));
-			glm::mat4 rAzi = rotate((float)iDeltaY * 1 / 800, glm::vec3(1, 0, 0));
-			camera->m_worldTransform = rEle* rAzi * camera->m_worldTransform;
-			camera->m_viewTransform = glm::inverse(camera->m_worldTransform);
-		}
-		
-		draw();
-		glfwSwapBuffers(m_window);
-		m_gameover = (glfwWindowShouldClose(m_window) == GLFW_TRUE);
 	}
 }
