@@ -10,16 +10,26 @@ class GeometryApplication : public Application
 public:
 	GeometryApplication();
 	~GeometryApplication();
-	unsigned int m_programID;
 	Camera* camera;
-	Mesh* mesh;
+
+	/**
+	 * \brief mesh for unsual shapes or shapes that don't have a specific mesh already created
+	 */
+	Mesh* generalMesh;
+	Mesh* sphereMesh;
+	Mesh* triangleMesh;
+	Mesh* cubeMesh;
+	Mesh* planeMesh;
+	
 	Shader* shader;
 
-	void GenObject(int select, int numPoints, int nummedians);
+	void drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* mesh);
+	void GenObject(Mesh* mesh, int select, int numP, int numM);
 protected:
 	void startup() override;
 	void shutdown() override;
 	void update(float) override;
 	void draw() override;
+
 };
 
