@@ -32,11 +32,12 @@ void GeometryApplication::startup()
 
 
 	//NOTE: Each mesh can only be used for one object
-	GenObject(generalMesh, 0, 0, 0);
 	GenObject(triangleMesh, 1, 0, 0);
 	GenObject(cubeMesh, 3, 0, 0);
 	GenObject(sphereMesh, 4, 25, 25);
-	GenObject(planeMesh, 5, 0, 0);
+	GenObject(planeMesh, 5, 10, 10);
+
+	GenObject(generalMesh, 6, 0, 0);
 }
 
 void GeometryApplication::shutdown()
@@ -89,20 +90,21 @@ void GeometryApplication::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	//drawMesh(GL_TRIANGLES, generalMesh);
+	drawMesh(GL_LINE, GL_TRIANGLES, generalMesh);
 
 	drawMesh(GL_FILL, GL_TRIANGLE_STRIP, sphereMesh);
 
 	drawMesh(GL_LINE, GL_TRIANGLES, planeMesh);
 
-	//drawMesh(GL_TRIANGLES, triangleMesh);
+	drawMesh(GL_LINE, GL_TRIANGLES, triangleMesh);
 
 	drawMesh(GL_FILL, GL_TRIANGLES, cubeMesh);
 
+	
 }
 
 /**
- * \brief 
+ * \brief Binds mesh and shader and Draws the objects
  * \param drawfill USE: GL_LINE, GL_FILL
  * \param drawstyle USE: GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_LINES
  * \param mesh use a mesh that corresponds with the object being generated 
@@ -122,7 +124,7 @@ void GeometryApplication::drawMesh(unsigned drawfill,unsigned drawstyle, Mesh* m
 }
 
 /**
- * \brief 
+ * \brief Gathers the points and indicies for objects and binds them to a mesh
  * \param mesh select mesh according to the object you want to generate
  * \param select 0= teacher example, 1= 2D Right Triangle, 2 = Flat Square, 3 = Cube, 4= Sphere, 5= Tutorial Generated Plane
  * \param numP = number of points; 3 or more points needed only for sphere
@@ -193,16 +195,16 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		camera->setLookAt(glm::vec3(2, 2, 5), glm::vec3(1, 1, 0), glm::vec3(0, 1, 0));
 
 
-		Vertex a = { glm::vec4(1,1,1, 1), glm::vec4(1, 0, 0, 1) }; //front-bleft
-		Vertex b = { glm::vec4(4, 1, 1, 1), glm::vec4(0, 1, 0, 1) }; //front-bright
-		Vertex c = { glm::vec4(4, 4, 1, 1), glm::vec4(0, 0, 1, 1) }; //front-trright
-		Vertex d = { glm::vec4(1, 4, 1, 1), glm::vec4(1, 1, 0, 1) }; //front-topleft
+		Vertex a = { glm::vec4(0,0,0, 1), glm::vec4(1, 0, 0, 1) }; //front-bleft
+		Vertex b = { glm::vec4(4, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //front-bright
+		Vertex c = { glm::vec4(4, 4, 0, 1), glm::vec4(0, 0, 1, 1) }; //front-trright
+		Vertex d = { glm::vec4(0, 4, 0, 1), glm::vec4(1, 1, 0, 1) }; //front-topleft
 
-		Vertex e = { glm::vec4(1, 1, -4, 1), glm::vec4(1, 1, 0, 1) }; //bottom-backleft
-		Vertex f = { glm::vec4(4, 1, -4, 1), glm::vec4(0, 1, 1, 1) }; //bottom-backright
+		Vertex e = { glm::vec4(0, 0, -4, 1), glm::vec4(1, 1, 0, 1) }; //bottom-backleft
+		Vertex f = { glm::vec4(4, 0, -4, 1), glm::vec4(0, 1, 1, 1) }; //bottom-backright
 
 		Vertex g = { glm::vec4(4, 4, -4, 1), glm::vec4(0, 1, 1, 1) }; //top-backleft
-		Vertex h = { glm::vec4(1, 4, -4, 1), glm::vec4(1, 1, 1, 1) }; //top-backright
+		Vertex h = { glm::vec4(0, 4, -4, 1), glm::vec4(1, 1, 1, 1) }; //top-backright
 
 		std::vector<Vertex> vertices{ a, b, c, d, e, f, g, h };
 		std::vector<unsigned int> indices{
@@ -231,7 +233,7 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		//Centered camera on center
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-		int rad = 1;
+		float rad = 1;
 		std::vector<Vertex> points;
 		std::vector<unsigned int> indices;
 
@@ -284,29 +286,29 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	case 5:
 	{
 		Vertex * aoVertices = new Vertex[100];
-		for (unsigned int r = 0; r < 10; ++r)
-			for (unsigned int c = 0; c < 10; ++c)
-				aoVertices[r * 10 + c].position = glm::vec4((float)c, 0, (float)r, 1);
-		const unsigned int numitems = (10 - 1) * (10 - 1) * 6;
+		for (unsigned int r = 0; r < numP; ++r)
+			for (unsigned int c = 0; c < numM; ++c)
+				aoVertices[r * numM + c].position = glm::vec4((float)c, 0, (float)r, 1);
+		const unsigned int numitems = (numP - 1) * (numM - 1) * 6;
 		auto auiIndices = new unsigned int[numitems];
 
 		unsigned int index = 0;
-		for (unsigned int r = 0; r < 10 - 1; ++r)
-			for (unsigned int c = 0; c < 10 - 1; ++c)
+		for (unsigned int r = 0; r < numP - 1; ++r)
+			for (unsigned int c = 0; c < numM - 1; ++c)
 			{
 				//Triangle 1
-				auiIndices[index++] = r * 10 + c;
-				auiIndices[index++] = (r + 1) * 10 + c;
-				auiIndices[index++] = (r + 1) * 10 + (c + 1);
+				auiIndices[index++] = r * numM + c;
+				auiIndices[index++] = (r + 1) * numM + c;
+				auiIndices[index++] = (r + 1) * numM + (c + 1);
 				//Triangle 2
-				auiIndices[index++] = r * 10 + c;
-				auiIndices[index++] = (r + 1) * 10 + (c + 1);
-				auiIndices[index++] = r * 10 + (c + 1);
+				auiIndices[index++] = r * numM + c;
+				auiIndices[index++] = (r + 1) * numM + (c + 1);
+				auiIndices[index++] = r * numM + (c + 1);
 			}
 
 		std::vector<Vertex> verts;
 		std::vector<unsigned int> indices;
-		for (unsigned int i = 0; i < 10 * 10; i++)
+		for (unsigned int i = 0; i < numP * numM; i++)
 			verts.push_back(aoVertices[i]);
 
 		for (unsigned int i = 0; i < numitems; i++)
@@ -317,8 +319,110 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 
 		delete[] aoVertices;
 		delete[] auiIndices;
+
+		break;
 	}
 
+	case 6:
+		{
+			generateSphere(15, 15, mesh->m_VAO, mesh->m_VBO, mesh->m_IBO, mesh->index_count);
+			break;
+		}
 	default: break;
 	}
+}
+
+void GeometryApplication::generateSphere(unsigned int segments, unsigned int rings,
+	unsigned int& vao, unsigned int& vbo, unsigned int& ibo,
+	unsigned int& indexCount) {
+
+	unsigned int vertCount = (segments + 1) * (rings + 2);
+	indexCount = segments * (rings + 1) * 6;
+
+	// using AIEVertex for now, but could be any struct as long as it has the correct elements
+	Vertex* vertices = new Vertex[vertCount];
+	unsigned int* indices = new unsigned int[indexCount];
+
+	float ringAngle = glm::pi<float>() / (rings + 1);
+	float segmentAngle = 2.0f * glm::pi<float>() / segments;
+
+	Vertex* vertex = vertices;
+
+	for (unsigned int ring = 0; ring < (rings + 2); ++ring) {
+		float r0 = glm::sin(ring * ringAngle);
+		float y0 = glm::cos(ring * ringAngle);
+
+		for (unsigned int segment = 0; segment < (segments + 1); ++segment, ++vertex) {
+			float x0 = r0 * glm::sin(segment * segmentAngle);
+			float z0 = r0 * glm::cos(segment * segmentAngle);
+
+			vertex->position = glm::vec4(x0 * 1.5f, y0 *1.5f, z0 * 1.5f, 1);
+			vertex->normal = glm::vec4(x0, y0, z0, 0);
+
+			vertex->tangent = glm::vec4(glm::sin(segment * segmentAngle + glm::half_pi<float>()), 0, glm::cos(segment * segmentAngle + glm::half_pi<float>()), 0);
+
+			// not a part of the AIEVertex, but this is how w generate bitangents
+			vertex->bitangent = glm::vec4(glm::cross(glm::vec3(vertex->normal), glm::vec3(vertex->tangent)), 0);
+
+			vertex->texcoord = glm::vec2(segment / (float)segments, ring / (float)(rings + 1));
+		}
+	}
+
+	unsigned int index = 0;
+	for (unsigned i = 0; i < (rings + 1); ++i) {
+		for (unsigned j = 0; j < segments; ++j) {
+			indices[index++] = i * (segments + 1) + j;
+			indices[index++] = (i + 1) * (segments + 1) + j;
+			indices[index++] = i * (segments + 1) + (j + 1);
+
+			indices[index++] = (i + 1) * (segments + 1) + (j + 1);
+			indices[index++] = i * (segments + 1) + (j + 1);
+			indices[index++] = (i + 1) * (segments + 1) + j;
+		}
+	}
+
+	// generate buffers
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ibo);
+
+	// generate vertex array object (descriptors)
+	glGenVertexArrays(1, &vao);
+
+	// all changes will apply to this handle
+	glBindVertexArray(vao);
+
+	// set vertex buffer data
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+
+	// index data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
+	// position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+	// colors
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4)));
+	// normals
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
+
+	// texcoords
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
+
+	// tangents
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3 + sizeof(glm::vec2)));
+
+	// safety
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	delete[] indices;
+	delete[] vertices;
 }

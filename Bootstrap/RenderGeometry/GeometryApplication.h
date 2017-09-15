@@ -25,6 +25,7 @@ public:
 
 	void drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* mesh);
 	void GenObject(Mesh* mesh, int select, int numP, int numM);
+	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo, unsigned& indexCount);
 protected:
 	void startup() override;
 	void shutdown() override;
