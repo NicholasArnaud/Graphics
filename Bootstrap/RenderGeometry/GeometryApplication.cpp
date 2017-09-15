@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include "Shader.h"
 #include <wingdi.h>
+#include <detail/type_mat.hpp>
+#include <vector>
 #define PI 3.141592653
 
 GeometryApplication::GeometryApplication() : generalMesh(nullptr), shader(nullptr)
@@ -134,7 +136,7 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 {
 	switch (select)
 	{
-		//wierd example shape
+	//wierd example shape
 	case 0:
 	{
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -232,50 +234,17 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	{
 		//Centered camera on center
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-
-		float rad = 1;
-		std::vector<Vertex> points;
-		std::vector<unsigned int> indices;
-
 		if (numP < 3) numP = 3;
 		if (numM < 3) numM = 3;
 
 		//For Half Circle
-		for (int i = 0; i < numP; i++)
-		{
-			float slice = PI / (numP - 1);
-			float Theta = i * slice;
-			float x = rad * sin(Theta);
-			float y = rad * cos(Theta);
-			Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(1, 0, 0, 1) };
-			printf("Points %i: %f, %f, %f \n", points.size(), g.position.x, g.position.y, g.position.z);
-			points.push_back(g);
-		}
-
+		std::vector<Vertex>points = GenHalfCircle(1, numP);
+		
 		//For Complete Circle
-		float phi = 2.f* PI / numM;
-		for (int l = 0; l <= numM; l++)
-		{
-			for (int k = 0; k < numP; k++)
-			{
-				float newX = rad* points[k].position.x * cos(phi* l);
-				float newY = rad* points[k].position.y;
-				float newZ = rad* points[k].position.x * -sin(phi* l);
-				Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(1, 0, 0, 1) };
-				printf("Points %i: %f, %f, %f \n", points.size(), n.position.x, n.position.y, n.position.z);
-				points.push_back(n);
-			}
-		}
+		points =GenSphere(points, numP, 1);
 
-
-		for (int i = 0; i <= numM; i++)
-		{
-			for (int j = 0; j < numP; j++)
-			{
-				indices.push_back(i* numM + j); //btm left
-				indices.push_back(i* numM + j + numM); //btm right
-			}
-		}
+		//Generate Indicies
+		std::vector<unsigned int>indices =GenIndicies(numP, numM);
 
 		mesh->initialize(points, indices);
 		mesh->create_buffers();
@@ -323,6 +292,7 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		break;
 	}
 
+	//Draws the sphere with triangles
 	case 6:
 		{
 			generateSphere(15, 15, mesh->m_VAO, mesh->m_VBO, mesh->m_IBO, mesh->index_count);
@@ -330,6 +300,56 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		}
 	default: break;
 	}
+}
+
+std::vector<unsigned int> GeometryApplication::GenIndicies(int numP, int numM)
+{
+	std::vector<unsigned int> indices;
+	for (int i = 0; i <= numM; i++)
+	{
+		for (int j = 0; j < numP; j++)
+		{
+			indices.push_back(i* numM + j); //btm left
+			indices.push_back(i* numM + j + numM); //btm right
+		}
+	}
+	return indices;
+}
+
+
+std::vector<Vertex> GeometryApplication::GenHalfCircle(float rad, int np)
+{
+	std::vector<Vertex> points;
+	for (int i = 0; i < np; i++)
+	{
+		float slice = PI / (np - 1);
+		float Theta = i * slice;
+		float x = rad * sin(Theta);
+		float y = rad * cos(Theta);
+		Vertex g = { glm::vec4(x, y, 0, 1), glm::vec4(1, 0, 0, 1) };
+		printf("Points %i: %f, %f, %f \n", points.size(), g.position.x, g.position.y, g.position.z);
+		points.push_back(g);
+	}
+	return points;
+}
+
+std::vector<Vertex> GeometryApplication::GenSphere(std::vector<Vertex> points, int nm, int rad)
+{
+	int numP = points.size();
+	float phi = 2.f* PI / nm;
+	for (int l = 0; l <= nm; l++)
+	{
+		for (int k = 0; k < numP; k++)
+		{
+			float newX = rad* points[k].position.x * cos(phi* l);
+			float newY = rad* points[k].position.y;
+			float newZ = rad* points[k].position.x * -sin(phi* l);
+			Vertex n = { glm::vec4(newX, newY, newZ, 1), glm::vec4(1, 0, 0, 1) };
+			printf("Points %i: %f, %f, %f \n", points.size(), n.position.x, n.position.y, n.position.z);
+			points.push_back(n);
+		}
+	}
+	return points;
 }
 
 void GeometryApplication::generateSphere(unsigned int segments, unsigned int rings,
