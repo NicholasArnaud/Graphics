@@ -244,7 +244,7 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		points =GenSphere(points, numP, 1);
 
 		//Generate Indicies
-		std::vector<unsigned int>indices =GenIndicies(numP, numM);
+		std::vector<unsigned int>indices =GenIndices(numP, numM);
 
 		mesh->initialize(points, indices);
 		mesh->create_buffers();
@@ -302,7 +302,7 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	}
 }
 
-std::vector<unsigned int> GeometryApplication::GenIndicies(int numP, int numM)
+std::vector<unsigned int> GeometryApplication::GenIndices(int numP, int numM)
 {
 	std::vector<unsigned int> indices;
 	for (int i = 0; i <= numM; i++)

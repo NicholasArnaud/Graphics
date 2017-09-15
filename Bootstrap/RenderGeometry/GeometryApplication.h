@@ -25,10 +25,12 @@ public:
 
 	void drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* mesh);
 	void GenObject(Mesh* mesh, int select, int numP, int numM);
-	std::vector<unsigned> GenIndicies(int numP, int numM);
+	std::vector<unsigned> GenIndices(int numP, int numM);
 	std::vector<Vertex> GenHalfCircle(float rad, int np);
 	std::vector<Vertex> GenSphere(std::vector<Vertex> points, int nm, int rad);
-	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo, unsigned& indexCount);
+	void generateSphere(unsigned int segments, unsigned int rings,
+		unsigned int& vao, unsigned int& vbo, unsigned int& ibo,
+		unsigned int& indexCount);
 protected:
 	void startup() override;
 	void shutdown() override;
