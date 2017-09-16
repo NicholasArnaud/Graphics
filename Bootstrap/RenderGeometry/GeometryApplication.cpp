@@ -26,7 +26,7 @@ GeometryApplication::~GeometryApplication()
 
 void GeometryApplication::startup()
 {
-
+	//Sets where the camera is going to focus on
 	camera->setLookAt(glm::vec3(0, 0, 1), glm::vec3(1), glm::vec3(0, 1, 0));
 
 	shader->load("Vertex.vert", GL_VERTEX_SHADER);
@@ -38,7 +38,6 @@ void GeometryApplication::startup()
 	GenObject(cubeMesh, 3, 0, 0);
 	GenObject(sphereMesh, 4, 25, 25);
 	GenObject(planeMesh, 5, 10, 10);
-
 	GenObject(generalMesh, 6, 0, 0);
 }
 
@@ -94,9 +93,9 @@ void GeometryApplication::draw()
 
 	drawMesh(GL_LINE, GL_TRIANGLES, generalMesh);
 
-	drawMesh(GL_FILL, GL_TRIANGLE_STRIP, sphereMesh);
+	drawMesh(GL_LINE, GL_TRIANGLE_STRIP, sphereMesh);
 
-	drawMesh(GL_LINE, GL_TRIANGLES, planeMesh);
+	drawMesh(GL_LINE, GL_TRIANGLE_STRIP, planeMesh);
 
 	drawMesh(GL_LINE, GL_TRIANGLES, triangleMesh);
 
@@ -171,20 +170,16 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 		break;
 	}
 
-	//2D Square w Mid
+	//Pre-defined grid
 	case 2:
 	{
 		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; //bl
 		Vertex b = { glm::vec4(3, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //br
-		Vertex c = { glm::vec4(3, 0, 3, 1), glm::vec4(0, 0, 1, 1) }; //tr
-		Vertex d = { glm::vec4(0, 0, 3, 1), glm::vec4(1, 1, 0, 1) }; //tl
-		Vertex e = { glm::vec4(1.5f, 1.5f, 0, 1), glm::vec4(0, 1, 1, 1) }; //mid
-		std::vector<Vertex> vertices{ a, b, c, d, e };
-		std::vector<unsigned int> indices{
-			0, 1, 4,
-			1, 2, 4,
-			2, 3, 4,
-			3, 0, 4 };
+		Vertex c = { glm::vec4(0, 3, 0, 1), glm::vec4(1, 1, 0, 1) }; //tl
+		Vertex d = { glm::vec4(3, 3, 0, 1), glm::vec4(0, 0, 1, 1) }; //tr
+		
+		std::vector<Vertex> vertices{ a, b, c, d };
+		std::vector<unsigned int> indices= GenIndices(2, 2);
 		mesh->initialize(vertices, indices);
 		mesh->create_buffers();
 		break;
@@ -234,6 +229,8 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	{
 		//Centered camera on center
 		camera->setLookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+
 		if (numP < 3) numP = 3;
 		if (numM < 3) numM = 3;
 
