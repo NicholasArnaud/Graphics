@@ -34,11 +34,11 @@ void GeometryApplication::startup()
 
 
 	//NOTE: Each mesh can only be used for one object
-	//GenObject(triangleMesh, 1, 0, 0);
-	//GenObject(cubeMesh, 3, 0, 0);
-	//GenObject(sphereMesh, 4, 25, 25);
+	GenObject(triangleMesh, 1, 0, 0);
+	GenObject(cubeMesh, 3, 0, 0);
+	GenObject(sphereMesh, 4, 25, 25);
 	GenObject(planeMesh, 2, 0, 0);
-	//GenObject(generalMesh, 6, 0, 0);
+	GenObject(generalMesh, 6, 0, 0);
 }
 
 void GeometryApplication::shutdown()
@@ -174,13 +174,13 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	case 2:
 	{
 		camera->setLookAt(glm::vec3(0, 0.5f, 3), glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0));
-		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; 
-		Vertex b = { glm::vec4(1, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; 
-		Vertex c = { glm::vec4(0, 1, 0, 1), glm::vec4(1, 1, 0, 1) }; 
-		Vertex d = { glm::vec4(1, 1, 0, 1), glm::vec4(0, 0, 1, 1) }; 
-		
-		Vertex e = { glm::vec4(2, 0, 0, 1), glm::vec4(0, 1, 0, 1) };
-		Vertex f = { glm::vec4(2, 1, 0, 1), glm::vec4(1, 1, 0, 1) };
+		Vertex a = { glm::vec4(0, 0,1, 1), glm::vec4(1, 0, 0, 1) }; 
+		Vertex b = { glm::vec4(1, 0,1, 1), glm::vec4(0, 1, 0, 1) }; 
+		Vertex c = { glm::vec4(0, 1,1, 1), glm::vec4(1, 1, 0, 1) }; 
+		Vertex d = { glm::vec4(1, 1,1, 1), glm::vec4(0, 0, 1, 1) }; 
+									
+		Vertex e = { glm::vec4(2, 0,1, 1), glm::vec4(0, 1, 0, 1) };
+		Vertex f = { glm::vec4(2, 1,1, 1), glm::vec4(1, 1, 0, 1) };
 		std::vector<Vertex> vertices{ a, b, c, d,b, e,f,d };
 		std::vector<unsigned int> indices= GenIndices(2, 2);
 		mesh->initialize(vertices, indices);
