@@ -34,11 +34,11 @@ void GeometryApplication::startup()
 
 
 	//NOTE: Each mesh can only be used for one object
-	GenObject(triangleMesh, 1, 0, 0);
-	GenObject(cubeMesh, 3, 0, 0);
-	GenObject(sphereMesh, 4, 25, 25);
-	GenObject(planeMesh, 5, 10, 10);
-	GenObject(generalMesh, 6, 0, 0);
+	//GenObject(triangleMesh, 1, 0, 0);
+	//GenObject(cubeMesh, 3, 0, 0);
+	//GenObject(sphereMesh, 4, 25, 25);
+	GenObject(planeMesh, 2, 0, 0);
+	//GenObject(generalMesh, 6, 0, 0);
 }
 
 void GeometryApplication::shutdown()
@@ -95,7 +95,7 @@ void GeometryApplication::draw()
 
 	drawMesh(GL_LINE, GL_TRIANGLE_STRIP, sphereMesh);
 
-	drawMesh(GL_LINE, GL_TRIANGLE_STRIP, planeMesh);
+	drawMesh(GL_LINE, GL_TRIANGLES, planeMesh);
 
 	drawMesh(GL_LINE, GL_TRIANGLES, triangleMesh);
 
@@ -173,12 +173,15 @@ void GeometryApplication::GenObject(Mesh* mesh, int select, int numP = 3, int nu
 	//Pre-defined grid
 	case 2:
 	{
-		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; //bl
-		Vertex b = { glm::vec4(3, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; //br
-		Vertex c = { glm::vec4(0, 3, 0, 1), glm::vec4(1, 1, 0, 1) }; //tl
-		Vertex d = { glm::vec4(3, 3, 0, 1), glm::vec4(0, 0, 1, 1) }; //tr
+		camera->setLookAt(glm::vec3(0, 0.5f, 3), glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0));
+		Vertex a = { glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1) }; 
+		Vertex b = { glm::vec4(1, 0, 0, 1), glm::vec4(0, 1, 0, 1) }; 
+		Vertex c = { glm::vec4(0, 1, 0, 1), glm::vec4(1, 1, 0, 1) }; 
+		Vertex d = { glm::vec4(1, 1, 0, 1), glm::vec4(0, 0, 1, 1) }; 
 		
-		std::vector<Vertex> vertices{ a, b, c, d };
+		Vertex e = { glm::vec4(2, 0, 0, 1), glm::vec4(0, 1, 0, 1) };
+		Vertex f = { glm::vec4(2, 1, 0, 1), glm::vec4(1, 1, 0, 1) };
+		std::vector<Vertex> vertices{ a, b, c, d,b, e,f,d };
 		std::vector<unsigned int> indices= GenIndices(2, 2);
 		mesh->initialize(vertices, indices);
 		mesh->create_buffers();
@@ -317,9 +320,9 @@ std::vector<unsigned int> GeometryApplication::GenIndices(int numP, int numM)
 std::vector<Vertex> GeometryApplication::GenHalfCircle(float rad, int np)
 {
 	std::vector<Vertex> points;
+	float slice = PI / (np - 1);
 	for (int i = 0; i < np; i++)
-	{
-		float slice = PI / (np - 1);
+	{		
 		float Theta = i * slice;
 		float x = rad * sin(Theta);
 		float y = rad * cos(Theta);
