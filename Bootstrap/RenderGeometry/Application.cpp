@@ -52,4 +52,5 @@ void Application::run(const char* title, unsigned int width, unsigned int height
 		glfwSwapBuffers(m_window);
 		m_gameover = glfwWindowShouldClose(m_window) == GLFW_TRUE;
 	}
+	shutdown();
 }
