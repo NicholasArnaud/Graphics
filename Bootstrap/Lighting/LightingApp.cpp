@@ -10,7 +10,6 @@ LightingApp::LightingApp() : sphereMesh(nullptr), gridMesh(nullptr), shader(null
 	m_directionalLight = DirectionalLight();
 	m_material = Material();
 	sphereMesh = new Mesh();
-	gridMesh = new Mesh();
 	shader = new Shader();
 	cam = new Camera();
 	cam->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 1.0f, 1000.f);
@@ -23,20 +22,20 @@ LightingApp::~LightingApp()
 
 void LightingApp::startup()
 {
-	
-	cam->setLookAt(glm::vec3(10, 0, 10), glm::vec3(1), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
+
 	shader->load("LightingVertex.vert", GL_VERTEX_SHADER);
 	shader->load("LightingFragment.frag", GL_FRAGMENT_SHADER);
 
 	m_directionalLight.diffuse = glm::vec3(1);
-	m_directionalLight.specular = glm::vec3(1);
-	m_directionalLight.direction = glm::vec3(1, 0, 1);
+	m_directionalLight.specular = glm::vec3(1,.25f,1);
+	m_directionalLight.direction = glm::vec3(1, -1, 0);
 
 	m_ambientLight = glm::vec3(.25f);
 
 	m_material.diffuse = glm::vec3(1);
-	m_material.ambient = glm::vec3(1);
-	m_material.specular = glm::vec3(1);
+	m_material.ambient = glm::vec3(0,.56f, 1);
+	m_material.specular = glm::vec3(0.25f, 1,1);
 	m_material.specularPower = 64;
 
 	generateSphere(32, 32, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
@@ -89,46 +88,53 @@ void LightingApp::update(float)
 		cam->m_viewTransform = glm::inverse(cam->m_worldTransform);
 	}
 #pragma endregion 
-
-	
 }
-
 
 void LightingApp::draw()
 {
-	drawMesh(GL_FILL, GL_TRIANGLE_STRIP, sphereMesh);
-}
-
-
-
-void LightingApp::drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* mesh)
-{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	shader->bind();
-	mesh->bind();
+
 
 	glm::mat4 pvm = cam->getProjectionView() * m_modelMatrix;
 
-	int matUniform = shader->getUniform("ProjectionViewModel");
+	int matUniform = shader->getUniform("projectionViewModel");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	int lightUniform = shader->getUniform("direction");
-	glUniform3fv(lightUniform,1, &m_directionalLight.direction[0]);
+	matUniform = shader->getUniform("Ka");
+	glUniform3fv(matUniform, 1, &m_material.ambient[0]);
 
-	lightUniform = shader->getUniform("light[0].Id");
+	matUniform = shader->getUniform("Kd");
+	glUniform3fv(matUniform, 1, &m_material.diffuse[0]);
+
+	matUniform = shader->getUniform("Ks");
+	glUniform3fv(matUniform, 1, &m_material.specular[0]);
+
+	matUniform = shader->getUniform("SpecPow");
+	glGetUniformfv(matUniform, 1, &m_material.specularPower);
+
+	int lightUniform = shader->getUniform("direction");
+	glUniform3fv(lightUniform, 1, &m_directionalLight.direction[0]);
+
+	lightUniform = shader->getUniform("Id");
 	glUniform3fv(lightUniform, 1, &m_directionalLight.diffuse[0]);
 
+	lightUniform = shader->getUniform("Ia");
+	glUniform3fv(lightUniform, 1, &m_ambientLight[0]);
 
-	glPolygonMode(GL_FRONT_AND_BACK, drawfill);
-	glDrawElements(drawstyle, sphereMesh->index_count, GL_UNSIGNED_INT, nullptr);
+	lightUniform = shader->getUniform("Is");
+	glUniform3fv(lightUniform, 1, &m_directionalLight.specular[0]);
 
-	mesh->unbind();
-	shader->unbind();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	sphereMesh->bind();
+	m_modelMatrix = glm::mat4(1);
+	glDrawElements(GL_TRIANGLE_STRIP, sphereMesh->index_count, GL_UNSIGNED_INT, nullptr);
+	sphereMesh->unbind();
 }
 
-void LightingApp::generateSphere(unsigned int segments, unsigned int rings,
-	unsigned int& vao, unsigned int& vbo, unsigned int& ibo,
-	unsigned int& indexCount) {
+void LightingApp::generateSphere(unsigned segments, unsigned rings, unsigned & vao, unsigned & vbo, unsigned & ibo, unsigned & indexCount)
+{
 
 	unsigned int vertCount = (segments + 1) * (rings + 2);
 	indexCount = segments * (rings + 1) * 6;

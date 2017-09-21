@@ -14,7 +14,7 @@ struct Material
 	glm::vec3 diffuse;
 	glm::vec3 ambient;
 	glm::vec3 specular;
-	int specularPower;
+	float specularPower;
 };
 class LightingApp :
 	public Application
@@ -37,7 +37,6 @@ protected:
 	void shutdown() override;
 	void update(float) override;
 	void draw() override;
-	void drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* sphereMesh);
 	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo, unsigned& indexCount);
 };
 

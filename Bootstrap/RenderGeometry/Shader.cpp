@@ -113,7 +113,7 @@ unsigned Shader::program()
 	return m_program;
 }
 
-unsigned int Shader::getUniform(const char *)
+unsigned int Shader::getUniform(const char * uniform)
 {
-	return 0;
+	return glGetUniformLocation(m_program,uniform);
 }
