@@ -7,6 +7,8 @@
 
 LightingApp::LightingApp() : sphereMesh(nullptr), gridMesh(nullptr), shader(nullptr), m_Quit(false)
 {
+	m_directionalLight = DirectionalLight();
+	m_material = Material();
 	sphereMesh = new Mesh();
 	gridMesh = new Mesh();
 	shader = new Shader();
@@ -22,12 +24,24 @@ LightingApp::~LightingApp()
 void LightingApp::startup()
 {
 	
-	cam->setLookAt(glm::vec3(-10, 10, 10), glm::vec3(1), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(10, 0, 10), glm::vec3(1), glm::vec3(0, 1, 0));
 	shader->load("LightingVertex.vert", GL_VERTEX_SHADER);
 	shader->load("LightingFragment.frag", GL_FRAGMENT_SHADER);
 
-	GenGrid();
-	generateSphere(15, 15, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
+	m_directionalLight.diffuse = glm::vec3(1);
+	m_directionalLight.specular = glm::vec3(1);
+	m_directionalLight.direction = glm::vec3(1, 0, 1);
+
+	m_ambientLight = glm::vec3(.25f);
+
+	m_material.diffuse = glm::vec3(1);
+	m_material.ambient = glm::vec3(1);
+	m_material.specular = glm::vec3(1);
+	m_material.specularPower = 64;
+
+	generateSphere(32, 32, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
+
+	m_modelMatrix = scale(glm::vec3(5));
 }
 
 void LightingApp::shutdown()
@@ -37,6 +51,7 @@ void LightingApp::shutdown()
 
 void LightingApp::update(float)
 {
+#pragma region KeyEvents
 	glfwPollEvents();
 	if (glfwGetKey(m_window, GLFW_KEY_W))
 		cam->setPosition(cam->getWorldTransform()[3] -= cam->getWorldTransform()[2] * .2f);
@@ -73,66 +88,41 @@ void LightingApp::update(float)
 		cam->m_worldTransform = rEle* rAzi * cam->m_worldTransform;
 		cam->m_viewTransform = glm::inverse(cam->m_worldTransform);
 	}
+#pragma endregion 
+
+	
 }
 
 
 void LightingApp::draw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-	drawMesh(GL_LINE, GL_TRIANGLES, gridMesh);
 	drawMesh(GL_FILL, GL_TRIANGLE_STRIP, sphereMesh);
 }
 
-void LightingApp::GenGrid()
+
+
+void LightingApp::drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* mesh)
 {
-	Vertex * aoVertices = new Vertex[100];
-	for (unsigned int r = 0; r < 10; ++r)
-		for (unsigned int c = 0; c < 10; ++c)
-			aoVertices[r * 10 + c].position = glm::vec4((float)c, 0, (float)r, 1);
-	const unsigned int numitems = (10 - 1) * (10 - 1) * 6;
-	auto auiIndices = new unsigned int[numitems];
-
-	unsigned int index = 0;
-	for (unsigned int r = 0; r < 10 - 1; ++r)
-		for (unsigned int c = 0; c < 10 - 1; ++c)
-		{
-			//Triangle 1
-			auiIndices[index++] = r * 10 + c;
-			auiIndices[index++] = (r + 1) * 10 + c;
-			auiIndices[index++] = (r + 1) * 10 + (c + 1);
-			//Triangle 2
-			auiIndices[index++] = r * 10 + c;
-			auiIndices[index++] = (r + 1) * 10 + (c + 1);
-			auiIndices[index++] = r * 10 + (c + 1);
-		}
-
-	std::vector<Vertex> verts;
-	std::vector<unsigned int> indices;
-	for (unsigned int i = 0; i < 10 * 10; i++)
-		verts.push_back(aoVertices[i]);
-
-	for (unsigned int i = 0; i < numitems; i++)
-		indices.push_back(auiIndices[i]);
-
-	gridMesh->initialize(verts, indices);
-	gridMesh->create_buffers();
-
-	delete[] aoVertices;
-	delete[] auiIndices;
-}
-
-void LightingApp::drawMesh(unsigned drawfill, unsigned drawstyle, Mesh* sphereMesh)
-{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	shader->bind();
-	sphereMesh->bind();
-	unsigned int pvt = glGetUniformLocation(shader->program(), "projectionViewWorldMatrix");
-	glUniformMatrix4fv(pvt, 1, false, glm::value_ptr(cam->getProjectionView()));
+	mesh->bind();
+
+	glm::mat4 pvm = cam->getProjectionView() * m_modelMatrix;
+
+	int matUniform = shader->getUniform("ProjectionViewModel");
+	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
+
+	int lightUniform = shader->getUniform("direction");
+	glUniform3fv(lightUniform,1, &m_directionalLight.direction[0]);
+
+	lightUniform = shader->getUniform("light[0].Id");
+	glUniform3fv(lightUniform, 1, &m_directionalLight.diffuse[0]);
+
 
 	glPolygonMode(GL_FRONT_AND_BACK, drawfill);
 	glDrawElements(drawstyle, sphereMesh->index_count, GL_UNSIGNED_INT, nullptr);
 
-	sphereMesh->unbind();
+	mesh->unbind();
 	shader->unbind();
 }
 
