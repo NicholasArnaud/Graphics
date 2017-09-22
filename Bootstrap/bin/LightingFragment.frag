@@ -42,5 +42,5 @@ void main()
 	float SpecSharp = pow(max(0.0f,dot(R, V)), SpecPow);
 	vec3 specular = Ks * Is * SpecSharp;
 
-	FragColor = vec4(ambient + diffuse + specular,1);
+	FragColor = vec4(ambient + diffuse,1);
 }
