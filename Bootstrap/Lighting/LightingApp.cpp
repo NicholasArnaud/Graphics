@@ -29,7 +29,7 @@ void LightingApp::startup()
 
 	m_directionalLight.diffuse = glm::vec3(1);
 	m_directionalLight.specular = glm::vec3(1,.25f,1);
-	m_directionalLight.direction = glm::vec3(1, -1, 0);
+	m_directionalLight.direction = glm::vec3(0, -1, -1);
 
 	m_ambientLight = glm::vec3(.25f);
 
@@ -97,9 +97,13 @@ void LightingApp::draw()
 
 
 	glm::mat4 pvm = cam->getProjectionView() * m_modelMatrix;
+	glm::vec3 camPos = glm::vec3(cam->m_viewTransform[3].x, cam->m_viewTransform[3].y, cam->m_viewTransform[3].z);
 
 	int matUniform = shader->getUniform("projectionViewModel");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
+
+	matUniform = shader->getUniform("CameraPos");
+	glUniform3fv(matUniform, 1, glm::value_ptr(camPos));
 
 	matUniform = shader->getUniform("Ka");
 	glUniform3fv(matUniform, 1, &m_material.ambient[0]);

@@ -26,18 +26,21 @@ out vec4 FragColor;
 
 void main() 
 { 
-	vec4 L = vec4(direction,1);
-	vec4 N = vNormal;
-
-	//algorithm:  Ka*Ia + Kd(LmN)*Id + Ks(RmV)^a *Is\\
-
-	vec4 ambient = vec4(vec4(Ka,1)* vec4(Ia,1));
-
-	float lambertDiffuse = max(0,dot(-L,N));
-	vec4 diffuse =  vec4(Kd,1) * lambertDiffuse * vec4(Id,1);
+	vec3 L = normalize(direction);
+	vec3 N = normalize(vNormal.xyz);
 
 
-	//float lambertSpec = max(0,dot())
+	vec3 ambient = Ka * Ia;
 
-	FragColor = ambient + diffuse;
+	float lambertDiffuse = max(0.0f,dot(N, -L));
+	vec3 diffuse = Kd * Id* lambertDiffuse;
+
+
+	vec3 R = reflect(L,N);
+	vec3 V = normalize(CameraPos.xyz - vPosition.xyz);
+
+	float SpecSharp = pow(max(0.0f,dot(R, V)), SpecPow);
+	vec3 specular = Ks * Is * SpecSharp;
+
+	FragColor = vec4(ambient + diffuse + specular,1);
 }

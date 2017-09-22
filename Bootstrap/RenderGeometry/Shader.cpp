@@ -97,7 +97,8 @@ void Shader::defaultLoad()
 	int success = GL_FALSE;
 	// check that it compiled and linked correctly
 	glGetProgramiv(m_program, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE) {
+	if (success == GL_FALSE) 
+	{
 		int infoLogLength = 0;
 		glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &infoLogLength);
 		char* infoLog = new char[infoLogLength + 1];
