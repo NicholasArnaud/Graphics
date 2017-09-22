@@ -39,8 +39,20 @@ void main()
 	vec3 R = reflect(L,N);
 	vec3 V = normalize(CameraPos.xyz - vPosition.xyz);
 
-	float SpecSharp = pow(max(0.0f,dot(R, V)), SpecPow);
-	vec3 specular = Ks * Is * SpecSharp;
+	//float SpecSharp = pow(max(0.0f,dot(R, V)), SpecPow);
+	//vec3 specular = Ks * Is * SpecSharp;
+	//Ks = vec3(1);
+    //Is = vec3(1);
+    //int specularPower = 20; 
+    //vec3 cam = vec3(10, 0, 1);
+    //specular not using blinn-phong
+    //R = reflect(L, N);
+    //V = normalize(cam - vPosition.xyz);
+    
+    //float RdotV = dot(R, V);
+    //float influnce = max(0, RdotV);
+    //float specularTerm = pow(influnce, specularPower);
+    //vec3 specular_p = Ks * specularTerm * Is;
 
-	FragColor = vec4(ambient + diffuse,1);
+	FragColor = vec4(ambient + diffuse+ specular,1);
 }
