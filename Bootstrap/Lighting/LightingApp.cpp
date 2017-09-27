@@ -22,21 +22,23 @@ LightingApp::~LightingApp()
 
 void LightingApp::startup()
 {
-	cam->setLookAt(glm::vec3(10, 10, 10), glm::vec3(0), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(1,1,-5), glm::vec3(0), glm::vec3(0, 1, 0));
 
 	shader->load("LightingVertex.vert", GL_VERTEX_SHADER);
 	shader->load("LightingFragment.frag", GL_FRAGMENT_SHADER);
 
+	//ID, IA, IS
 	m_directionalLight.diffuse = glm::vec3(1);
-	m_directionalLight.specular = glm::vec3(1,.25f,1);
+	m_directionalLight.specular = glm::vec3(1);
 	m_directionalLight.direction = glm::vec3(0, -1, -1);
 
 	m_ambientLight = glm::vec3(.25f);
+	m_material.specularPower = 20;
 
+	//KD, KA, KS
 	m_material.diffuse = glm::vec3(1);
 	m_material.ambient = glm::vec3(0,.56f, 1);
-	m_material.specular = glm::vec3(0.25f, 1,1);
-	m_material.specularPower = 64;
+	m_material.specular = glm::vec3(1);
 
 	generateSphere(32, 32, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 
@@ -61,11 +63,13 @@ void LightingApp::update(float)
 	if (glfwGetKey(m_window, GLFW_KEY_D))
 		cam->setPosition(cam->getWorldTransform()[3] += cam->getWorldTransform()[0] * .2f);
 
+	static double siPrevMouseX = 0, siPrevMouseY = 0;
+	double mouseX = 0, mouseY = 0;
+	double iDeltaX = 0, iDeltaY = 0;
 	static bool sbMouseButtonDown = false;
 	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 
-		static double siPrevMouseX = 0;
-		static double siPrevMouseY = 0;
+
 
 		if (sbMouseButtonDown == false)
 		{
@@ -73,19 +77,19 @@ void LightingApp::update(float)
 			glfwGetCursorPos(m_window, &siPrevMouseX, &siPrevMouseY);
 		}
 
-		double mouseX = 0, mouseY = 0;
+
 		glfwGetCursorPos(m_window, &mouseX, &mouseY);
 
-		double iDeltaX = mouseX - siPrevMouseX;
-		double iDeltaY = mouseY - siPrevMouseY;
+		iDeltaX = mouseX - siPrevMouseX;
+		iDeltaY = mouseY - siPrevMouseY;
 
 		siPrevMouseX = mouseX;
 		siPrevMouseY = mouseY;
 
 		glm::mat4 rEle = rotate((float)iDeltaX * 1 / 800, glm::vec3(0, 1, 0));
 		glm::mat4 rAzi = rotate((float)iDeltaY * 1 / 800, glm::vec3(1, 0, 0));
-		cam->m_worldTransform = rEle* rAzi * cam->m_worldTransform;
-		cam->m_viewTransform = glm::inverse(cam->m_worldTransform);
+		cam->m_viewTransform = rEle* rAzi * cam->m_viewTransform;
+		cam->m_worldTransform = glm::inverse(cam->m_viewTransform);
 	}
 #pragma endregion 
 }
@@ -95,6 +99,8 @@ void LightingApp::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	shader->bind();
 
+
+	
 
 	glm::mat4 pvm = cam->getProjectionView() * m_modelMatrix;
 	glm::vec3 camPos = glm::vec3(cam->m_viewTransform[3].x, cam->m_viewTransform[3].y, cam->m_viewTransform[3].z);
@@ -114,8 +120,8 @@ void LightingApp::draw()
 	matUniform = shader->getUniform("Ks");
 	glUniform3fv(matUniform, 1, &m_material.specular[0]);
 
-	matUniform = shader->getUniform("SpecPow");
-	glGetUniformfv(matUniform, 1, &m_material.specularPower);
+	matUniform = shader->getUniform("specPow");
+	glUniform1f(matUniform, m_material.specularPower);
 
 	int lightUniform = shader->getUniform("direction");
 	glUniform3fv(lightUniform, 1, &m_directionalLight.direction[0]);
