@@ -65,7 +65,7 @@ void LightingApp::update(float)
 
 	static double siPrevMouseX = 0, siPrevMouseY = 0;
 	double mouseX = 0, mouseY = 0;
-	double iDeltaX = 0, iDeltaY = 0;
+	double iDeltaX, iDeltaY;
 	static bool sbMouseButtonDown = false;
 	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 

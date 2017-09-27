@@ -36,7 +36,6 @@ protected:
 	void startup() override;
 	void shutdown() override;
 	void update(float) override;
-	void mouseCallback(GLFWwindow * window, double xpos, double ypos);
 	void draw() override;
 	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo, unsigned& indexCount);
 };
