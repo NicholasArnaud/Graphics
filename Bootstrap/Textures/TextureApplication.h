@@ -19,9 +19,12 @@ protected:
 	void update(float) override;
 	void draw() override;
 	void genTexPlane(int rows, int cols);
+	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
+	                    unsigned& indexCount);
 
 	Shader* shader;
 	Mesh* planeMesh;
+	Mesh* sphereMesh;
 	Camera* cam;
 };
 

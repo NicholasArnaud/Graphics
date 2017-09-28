@@ -126,6 +126,8 @@
     <ClInclude Include="TextureApplication.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\bin\TexPlusLightFragment.frag" />
+    <None Include="..\bin\TexPlusLightVertex.vert" />
     <None Include="..\bin\TextureFragment.frag" />
     <None Include="..\bin\TextureVertex.vert" />
   </ItemGroup>
