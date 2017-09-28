@@ -18,7 +18,8 @@ protected:
 	void shutdown() override;
 	void update(float) override;
 	void draw() override;
-	void genTexPlane(unsigned& vao, unsigned& vbo, unsigned& ibo);
+	void genTexPlane(int rows, int cols);
+
 	Shader* shader;
 	Mesh* planeMesh;
 	Camera* cam;

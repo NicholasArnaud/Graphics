@@ -29,6 +29,10 @@ void Mesh::create_buffers()
 	
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(glm::vec4));
+	
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) (sizeof(glm::vec4)*2));
+
 }
 
 void Mesh::initialize(std::vector<Vertex>& verts, std::vector<unsigned int>& indices)
