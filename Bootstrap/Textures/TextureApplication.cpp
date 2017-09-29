@@ -8,11 +8,12 @@
 #include <GLFW/glfw3.h>
 
 
-TextureApplication::TextureApplication(): texture1(0), sphereMesh(nullptr)
+TextureApplication::TextureApplication(): texture1(0), texture2(0), texture3(0), sphereMesh(nullptr)
 {
 	sphereMesh = new Mesh();
 	planeMesh = new Mesh();
 	shader = new Shader();
+	crateShader = new Shader();
 	cam = new Camera();
 	cam->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 1.0f, 1000.f);
 }
@@ -28,8 +29,9 @@ void TextureApplication::startup()
 
 	shader->load("TexPlusLightVertex.vert",GL_VERTEX_SHADER);
 	shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
-
-	genTexPlane(2, 3);
+	crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
+	crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
+	
 	generateSphere(100, 100, sphereMesh->m_VAO,sphereMesh->m_VBO,sphereMesh->m_IBO,sphereMesh->index_count);
 	/*
 	* glGenTextures
@@ -38,6 +40,8 @@ void TextureApplication::startup()
 	* glTexParameteri
 	* glTexParameteri
 	*/
+
+	genTexPlane();
 	int width, height, nrchannals;
 	unsigned char* data = stbi_load("images/erf.png", &width, &height, &nrchannals, 0);
 	
@@ -46,7 +50,7 @@ void TextureApplication::startup()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+	stbi_image_free(data);
 
 	unsigned char* data1 = stbi_load("images/erfcloud.png", &width, &height, &nrchannals, 0);
 	glGenTextures(1, &texture2);
@@ -54,8 +58,15 @@ void TextureApplication::startup()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	stbi_image_free(data1);
 
-	stbi_image_free(data);
+	unsigned char* data2 = stbi_load("images/crate.png", &width, &height, &nrchannals, 0);
+	glGenTextures(1, &texture3);
+	glBindTexture(GL_TEXTURE_2D, texture3);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	stbi_image_free(data2);
 
 
 }
@@ -113,11 +124,12 @@ void TextureApplication::draw()
 	int matUniform = shader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	GLint texLoc;
-	texLoc = shader->getUniform("texture1");
+	GLint texLoc = shader->getUniform("texture1");
 	glUniform1i(texLoc, 0);
 	texLoc = shader->getUniform("texture2");
 	glUniform1i(texLoc, 1);
+
+
 
 	// glActiveTexture
 	// glBindTexture
@@ -133,9 +145,24 @@ void TextureApplication::draw()
 	sphereMesh->bind();
 	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
 	sphereMesh->unbind();
+	shader->unbind();
+
+	crateShader->bind();
+	matUniform = shader->getUniform("projectionView");
+	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
+
+	texLoc = crateShader->getUniform("texture1");
+	glUniform1i(texLoc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture3);
+
+	planeMesh->bind();
+	glDrawElements(GL_TRIANGLES, planeMesh->index_count, GL_UNSIGNED_INT, 0);
+	planeMesh->unbind();
+	crateShader->unbind();
 }
 
-void TextureApplication::genTexPlane(int rows, int cols)
+void TextureApplication::genTexPlane()
 {
 
 	float verts[] = {
@@ -170,23 +197,16 @@ void TextureApplication::genTexPlane(int rows, int cols)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeMesh->m_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// position
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-
-	// colors
+	// color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4)));
-	// normals
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
-
-	// texcoords
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
-
-
-
 }
 
 void TextureApplication::generateSphere(unsigned int segments, unsigned int rings,

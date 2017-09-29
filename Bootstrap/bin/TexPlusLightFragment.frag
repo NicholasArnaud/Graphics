@@ -31,8 +31,9 @@ void main()
 { 
 	Id,Ia,Is = vec3(1);
 	direction = vec3(1);
-	Ka,Kd,Ks = vec3(1);
-	specPow = 5;
+	Ka = vec3(1,1,0);
+	Kd, Ks = vec3(1);
+	specPow = 0;
 
 	//Ambient
 	
@@ -50,12 +51,12 @@ void main()
 
 	vec3 R = reflect(L,N);
 	vec3 V = normalize(CameraPos.xyz - vPosition.xyz);
-	//float specularPower = 20;
 
 	float influence = pow(max(0,dot(R, V)), specPow);
 	vec3 specular = Ks * Is * influence;
 
 	//Lighting w/ Texture
 
-	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), 0.5) * vec4(ambient + diffuse+ specular,1);
+	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), 0.3) * vec4(ambient + diffuse+ specular,1);
+
 }
