@@ -33,7 +33,7 @@ void main()
 	direction = vec3(1);
 	Ka = vec3(1,1,0);
 	Kd, Ks = vec3(1);
-	specPow = 0;
+	specPow = 5;
 
 	//Ambient
 	
@@ -57,6 +57,6 @@ void main()
 
 	//Lighting w/ Texture
 
-	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), 0.3) * vec4(ambient + diffuse+ specular,1);
+	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), .3f) * vec4(ambient + diffuse+ specular,1);
 
 }

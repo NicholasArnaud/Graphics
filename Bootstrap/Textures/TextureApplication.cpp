@@ -6,9 +6,10 @@
 #include <Shader.h>
 #include <Camera.h>
 #include <GLFW/glfw3.h>
+#include <sstream>
 
 
-TextureApplication::TextureApplication(): texture1(0), texture2(0), texture3(0), sphereMesh(nullptr)
+TextureApplication::TextureApplication() : texture1(0), texture2(0), texture3(0)
 {
 	sphereMesh = new Mesh();
 	planeMesh = new Mesh();
@@ -18,21 +19,19 @@ TextureApplication::TextureApplication(): texture1(0), texture2(0), texture3(0),
 	cam->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 1.0f, 1000.f);
 }
 
-
 TextureApplication::~TextureApplication()
 {
 }
 
 void TextureApplication::startup()
 {
-	cam->setLookAt(glm::vec3(0.5f,0.5f,5), glm::vec3(.1f), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(0.5f, 0.5f, 5), glm::vec3(.1f), glm::vec3(0, 1, 0));
 
-	shader->load("TexPlusLightVertex.vert",GL_VERTEX_SHADER);
+	shader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
 	shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
 	crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
 	crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
-	
-	generateSphere(100, 100, sphereMesh->m_VAO,sphereMesh->m_VBO,sphereMesh->m_IBO,sphereMesh->index_count);
+
 	/*
 	* glGenTextures
 	* glBindTextures
@@ -40,35 +39,11 @@ void TextureApplication::startup()
 	* glTexParameteri
 	* glTexParameteri
 	*/
-
+	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	genTexPlane();
-	int width, height, nrchannals;
-	unsigned char* data = stbi_load("images/erf.png", &width, &height, &nrchannals, 0);
-	
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	stbi_image_free(data);
-
-	unsigned char* data1 = stbi_load("images/erfcloud.png", &width, &height, &nrchannals, 0);
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	stbi_image_free(data1);
-
-	unsigned char* data2 = stbi_load("images/crate.png", &width, &height, &nrchannals, 0);
-	glGenTextures(1, &texture3);
-	glBindTexture(GL_TEXTURE_2D, texture3);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	stbi_image_free(data2);
-
-
+	setupTexture("images/erf.png", &texture1);
+	setupTexture("images/erfcloud.png", &texture2);
+	setupTexture("images/crate.png", &texture3);
 }
 
 void TextureApplication::shutdown()
@@ -94,7 +69,7 @@ void TextureApplication::update(float)
 	double iDeltaX = 0, iDeltaY = 0;
 	static bool sbMouseButtonDown = false;
 	if (glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-		
+
 		if (sbMouseButtonDown == false)
 		{
 			sbMouseButtonDown = true;
@@ -123,24 +98,8 @@ void TextureApplication::draw()
 	glm::mat4 pvm = cam->getProjectionView();
 	int matUniform = shader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
-
-	GLint texLoc = shader->getUniform("texture1");
-	glUniform1i(texLoc, 0);
-	texLoc = shader->getUniform("texture2");
-	glUniform1i(texLoc, 1);
-
-
-
-	// glActiveTexture
-	// glBindTexture
-	// glBindVertex Array
-	// glDrawElements
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture2);
+	
+	drawTex(shader, &texture1, 2);
 
 	sphereMesh->bind();
 	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
@@ -148,13 +107,10 @@ void TextureApplication::draw()
 	shader->unbind();
 
 	crateShader->bind();
-	matUniform = shader->getUniform("projectionView");
+	matUniform = crateShader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	texLoc = crateShader->getUniform("texture1");
-	glUniform1i(texLoc, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture3);
+	drawTex(crateShader, &texture3, 1);
 
 	planeMesh->bind();
 	glDrawElements(GL_TRIANGLES, planeMesh->index_count, GL_UNSIGNED_INT, 0);
@@ -162,7 +118,7 @@ void TextureApplication::draw()
 	crateShader->unbind();
 }
 
-void TextureApplication::genTexPlane()
+void TextureApplication::genTexPlane() const
 {
 
 	float verts[] = {
@@ -175,16 +131,16 @@ void TextureApplication::genTexPlane()
 
 	unsigned int indices[] = {
 		0, 1, 3,
-		1, 2, 3 
+		1, 2, 3
 	};
 
-	planeMesh->index_count =sizeof(indices);
+	planeMesh->index_count = sizeof(indices);
 	// generate buffers
 	glGenBuffers(1, &planeMesh->m_VBO);
 	glGenBuffers(1, &planeMesh->m_IBO);
 
 	// generate vertex array object (descriptors)
-	glGenVertexArrays(1,&planeMesh->m_VAO);
+	glGenVertexArrays(1, &planeMesh->m_VAO);
 
 	// all changes will apply to this handle
 	glBindVertexArray(planeMesh->m_VAO);
@@ -209,18 +165,18 @@ void TextureApplication::genTexPlane()
 	glEnableVertexAttribArray(2);
 }
 
-void TextureApplication::generateSphere(unsigned int segments, unsigned int rings,
+void TextureApplication::generateSphere(const unsigned int segments, const unsigned int rings,
 	unsigned int& vao, unsigned int& vbo, unsigned int& ibo,
-	unsigned int& indexCount) {
-
-	unsigned int vertCount = (segments + 1) * (rings + 2);
+	unsigned int& indexCount) const
+{
+	const unsigned int vertCount = (segments + 1) * (rings + 2);
 	indexCount = segments * (rings + 1) * 6;
 
 	Vertex* vertices = new Vertex[vertCount];
 	unsigned int* indices = new unsigned int[indexCount];
 
-	float ringAngle = glm::pi<float>() / (rings + 1);
-	float segmentAngle = 2.0f * glm::pi<float>() / segments;
+	const float ringAngle = glm::pi<float>() / (rings + 1);
+	const float segmentAngle = 2.0f * glm::pi<float>() / segments;
 
 	Vertex* vertex = vertices;
 
@@ -301,4 +257,36 @@ void TextureApplication::generateSphere(unsigned int segments, unsigned int ring
 
 	delete[] indices;
 	delete[] vertices;
+}
+
+void TextureApplication::setupTexture(char* imageLoc, unsigned int* texture)
+{
+	int width, height, nrchannals;
+	unsigned char* data = stbi_load(imageLoc, &width, &height, &nrchannals, 0);
+
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_2D, *texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	stbi_image_free(data);
+}
+
+void TextureApplication::drawTex(Shader* shader, unsigned int* texture, const int numOfTextures)
+{
+	std::stringstream ss;
+	for (int i = 0; i <= numOfTextures; i++)
+	{
+		ss << "texture" << i +1;
+		std::string tmp = ss.str();
+		const char * tex = tmp.c_str();
+				
+		GLint texLoc = shader->getUniform(tex);
+		glUniform1i(texLoc, i);
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, *texture + i);
+		
+		ss.str(std::string());
+		ss.clear();
+	}
 }

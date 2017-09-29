@@ -21,9 +21,11 @@ protected:
 	void shutdown() override;
 	void update(float) override;
 	void draw() override;
-	void genTexPlane();
+	void genTexPlane() const;
+	static void setupTexture(char * imageLoc, unsigned int * texture);
+	static void drawTex(Shader* shader, unsigned* texture, int numOfTextures);
 	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
-	                    unsigned& indexCount);
+	                    unsigned& indexCount) const;
 
 	Shader* crateShader;
 	Shader* shader;
