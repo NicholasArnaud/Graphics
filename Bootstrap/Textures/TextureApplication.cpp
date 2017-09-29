@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 
 
-TextureApplication::TextureApplication(): texture(0), sphereMesh(nullptr)
+TextureApplication::TextureApplication(): texture1(0), sphereMesh(nullptr)
 {
 	sphereMesh = new Mesh();
 	planeMesh = new Mesh();
@@ -24,7 +24,7 @@ TextureApplication::~TextureApplication()
 
 void TextureApplication::startup()
 {
-	cam->setLookAt(glm::vec3(0.5f,0.5f,5), glm::vec3(.5f), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(0.5f,0.5f,5), glm::vec3(.1f), glm::vec3(0, 1, 0));
 
 	shader->load("TexPlusLightVertex.vert",GL_VERTEX_SHADER);
 	shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
@@ -41,9 +41,17 @@ void TextureApplication::startup()
 	int width, height, nrchannals;
 	unsigned char* data = stbi_load("images/erf.png", &width, &height, &nrchannals, 0);
 	
-	glGenTextures(0, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+
+	unsigned char* data1 = stbi_load("images/erfcloud.png", &width, &height, &nrchannals, 0);
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -105,13 +113,22 @@ void TextureApplication::draw()
 	int matUniform = shader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
+	GLint texLoc;
+	texLoc = shader->getUniform("texture1");
+	glUniform1i(texLoc, 0);
+	texLoc = shader->getUniform("texture2");
+	glUniform1i(texLoc, 1);
+
 	// glActiveTexture
 	// glBindTexture
 	// glBindVertex Array
 	// glDrawElements
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
 
 	sphereMesh->bind();
 	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
@@ -153,54 +170,23 @@ void TextureApplication::genTexPlane(int rows, int cols)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, planeMesh->m_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// position attribute
+	// position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	
-	// color attribute
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
+	// colors
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	
-	// texture coord attribute
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4)));
+	// normals
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	
-/*	
-	Vertex * aoVertices = new Vertex[100];
-	for (unsigned int r = 0; r < rows; ++r)
-		for (unsigned int c = 0; c < cols; ++c)
-			aoVertices[r * cols + c].position = glm::vec4((float)c, 0, (float)r, 1);
-	const unsigned int numitems = (rows - 1) * (cols - 1) * 6;
-	auto auiIndices = new unsigned int[numitems];
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
 
-	unsigned int index = 0;
-	for (unsigned int r = 0; r < rows - 1; ++r)
-		for (unsigned int c = 0; c < cols - 1; ++c)
-		{
-			//Triangle 1
-			auiIndices[index++] = r * cols + c;
-			auiIndices[index++] = (r + 1) * cols + c;
-			auiIndices[index++] = (r + 1) * cols + (c + 1);
-			//Triangle 2
-			auiIndices[index++] = r * cols + c;
-			auiIndices[index++] = (r + 1) * cols + (c + 1);
-			auiIndices[index++] = r * cols + (c + 1);
-		}
+	// texcoords
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
 
-	std::vector<Vertex> verts;
-	std::vector<unsigned int> indices;
-	for (unsigned int i = 0; i < rows * cols; i++)
-		verts.push_back(aoVertices[i]);
 
-	for (unsigned int i = 0; i < numitems; i++)
-		indices.push_back(auiIndices[i]);
 
-	planeMesh->initialize(verts, indices);
-	planeMesh->create_buffers();
-
-	delete[] aoVertices;
-	delete[] auiIndices;
-*/
 }
 
 void TextureApplication::generateSphere(unsigned int segments, unsigned int rings,

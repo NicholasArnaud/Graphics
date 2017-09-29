@@ -11,7 +11,8 @@ public:
 	TextureApplication();
 	~TextureApplication();
 
-	unsigned int texture;
+	unsigned int texture1;
+	unsigned int texture2;
 
 protected:
 	void startup() override;

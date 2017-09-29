@@ -16,6 +16,7 @@ vec3 Ks;
 
 float specPow;
 uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 in vec4 vNormal;
 in vec4 vPosition;
@@ -29,7 +30,7 @@ out vec4 FragColor;
 void main() 
 { 
 	Id,Ia,Is = vec3(1);
-	direction = vec3(2);
+	direction = vec3(1);
 	Ka,Kd,Ks = vec3(1);
 	specPow = 5;
 
@@ -56,5 +57,5 @@ void main()
 
 	//Lighting w/ Texture
 
-	FragColor =texture(texture1,vUV) * vec4(ambient + diffuse+ specular,1);
+	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), 0.5) * vec4(ambient + diffuse+ specular,1);
 }
