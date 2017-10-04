@@ -57,6 +57,6 @@ void main()
 
 	//Lighting w/ Texture
 
-	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), .3f) * vec4(ambient + diffuse+ specular,1);
+	FragColor =mix(texture(texture1, vUV), texture(texture2, vUV), .5f) * vec4(ambient + diffuse+ specular,1);
 
 }

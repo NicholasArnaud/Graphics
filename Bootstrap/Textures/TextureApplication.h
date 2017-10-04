@@ -14,6 +14,7 @@ public:
 	unsigned int texture1;
 	unsigned int texture2;
 	unsigned int texture3;
+	unsigned int perlin_data;
 
 
 protected:
@@ -24,6 +25,7 @@ protected:
 	void genTexPlane() const;
 	static void setupTexture(char * imageLoc, unsigned int * texture);
 	static void drawTex(Shader* shader, unsigned* texture, int numOfTextures);
+	float* genNoiseTex(unsigned width, unsigned height);
 	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
 	                    unsigned& indexCount) const;
 
