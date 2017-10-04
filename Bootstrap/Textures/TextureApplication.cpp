@@ -34,7 +34,7 @@ Mesh* generateGrid(unsigned int rows, unsigned int cols)
 				glm::vec4(float(c), 0, float(r), 1), //POSITION
 				glm::vec4(0), //COLOR
 				glm::vec4(0, 1, 0, 0), //NORMAL
-				glm::vec2(float(c) / float(cols - 1), float(r) / float(rows - 1)), //TEXTURE COORDINATE
+				glm::vec2(float(c) / float(cols), float(r) / float(rows + 1)), //TEXTURE COORDINATE
 				glm::vec4(0,1,0,0) //TANGENT
 			};
 			aoVertices[r * cols + c] = verts;
@@ -88,6 +88,8 @@ void TextureApplication::startup()
 	//shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
 	crateShader->load("NoiseVert.vert", GL_VERTEX_SHADER);
 	crateShader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
+	shader->load("NoiseVert.vert", GL_VERTEX_SHADER);
+	shader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
 
 	/*
 	* glGenTextures
@@ -96,7 +98,7 @@ void TextureApplication::startup()
 	* glTexParameteri
 	* glTexParameteri
 	*/
-	//generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
+	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	
 	//genTexPlane();
 	//setupTexture("images/earth_diffuse.jpg", &texture1);
@@ -107,11 +109,13 @@ void TextureApplication::startup()
 	
 	int dims = 64; float *perlinData = new float[dims * dims];
 	float scale = (1.0f / dims) * 3;
-	int octaves = 6; for (int x = 0; x < 64; ++x)
+	int octaves = 6;
+	for (int x = 0; x < 64; ++x)
 	{
 		for (int y = 0; y < 64; ++y)
 		{
-			float amplitude = 1.f; float persistence = 0.3f;
+			float amplitude = 1.f;
+			float persistence = 0.3f;
 			perlinData[y * dims + x] = 0;
 			for (int o = 0; o < octaves; ++o)
 			{
@@ -180,7 +184,7 @@ void TextureApplication::update(float)
 void TextureApplication::draw()
 {
 	glm::mat4 pvm = cam->getProjectionView();
-/*
+
 #pragma region sphere
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	shader->bind();
@@ -188,24 +192,24 @@ void TextureApplication::draw()
 	int matUniform = shader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	drawTex(shader, &texture1, 2);
+	texture3 = perlin_data;
+	drawTex(shader, &texture3, 1);
 
 	sphereMesh->bind();
 	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
 	sphereMesh->unbind();
 	shader->unbind();
 #pragma endregion
-*/
 	#pragma region plane
 	crateShader->bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, perlin_data);
 
-	int matUniform = crateShader->getUniform("projectionView");
+	matUniform = crateShader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	//drawTex(crateShader, &texture4, 1);
-	glUniform1i(crateShader->getUniform("perlinTexture"), 0);
+	texture4 = perlin_data;
+	drawTex(crateShader, &texture4, 1);
 
 	planeMesh->bind();
 	glDrawElements(GL_TRIANGLES, planeMesh->index_count, GL_UNSIGNED_INT, 0);

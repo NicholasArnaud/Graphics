@@ -15,6 +15,7 @@ public:
 	unsigned int texture2;
 	unsigned int texture3;
 	unsigned int perlin_data;
+	unsigned texture4;
 
 
 protected:
