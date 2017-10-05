@@ -19,6 +19,7 @@ public:
 
 
 protected:
+	Mesh* generateGrid(unsigned rows, unsigned cols);
 	void startup() override;
 	void shutdown() override;
 	void update(float) override;
@@ -27,7 +28,7 @@ protected:
 	static void setupTexture(char * imageLoc, unsigned int * texture);
 	static void drawTex(Shader* shader, unsigned* texture, int numOfTextures);
 	float* genNoiseTex(unsigned width, unsigned height);
-	void generateSphere(unsigned segments, unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
+	void generateSphere(const unsigned segments, const unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
 	                    unsigned& indexCount) const;
 
 	Shader* crateShader;

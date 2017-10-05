@@ -23,24 +23,32 @@ TextureApplication::~TextureApplication()
 {
 }
 
-Mesh* generateGrid(unsigned int rows, unsigned int cols)
+Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
 {
-	Vertex * aoVertices = new Vertex[rows * cols];
+	auto aoVertices = new Vertex[rows * cols];
 	for (unsigned int r = 0; r < rows; ++r)
+	{
 		for (unsigned int c = 0; c < cols; ++c)
 		{
-			aoVertices[r * cols + c].position = glm::vec4((float)c, 0, (float)r, 1);
-			aoVertices[r * cols + c].normal = glm::vec4(0, 1, 0, 0);
-			aoVertices[r * cols + c].texcoord = glm::vec3(float(c) / float(cols), float(r) / float(rows - 1), 0);
-			aoVertices[r * cols + c].tangent = glm::vec4(0, 1, 0, 0);
+			Vertex verts = {
+				glm::vec4(float(c), 0, float(r), 1),
+				glm::vec4(sin(r), cos(c), 0, 1),
+				glm::vec4(0, 1, 0, 0),
+				glm::vec2(float(c) / float(cols -1), float(r) / float(rows -1))
+			};
+			aoVertices[r * cols + c] = verts;
 		}
-			
-	const unsigned int numitems = (rows - 1) * (cols - 1) * 6;
-	auto auiIndices = new unsigned int[numitems];
+	}
 
+	std::vector<Vertex> verts = std::vector<Vertex>();
+	std::vector<unsigned int> indices = std::vector<unsigned int>();
+
+	//Defining index count based off quad count (2 triangles per quad)
+	unsigned int* auiIndices = new unsigned int[(rows - 1) * (cols - 1) * 6];
 	unsigned int index = 0;
-	for (unsigned int r = 0; r < rows - 1; ++r)
-		for (unsigned int c = 0; c < cols - 1; ++c)
+	for (unsigned int r = 0; r < (rows - 1); ++r)
+	{
+		for (unsigned int c = 0; c < (cols - 1); ++c)
 		{
 			//Triangle 1
 			auiIndices[index++] = r * cols + c;
@@ -51,61 +59,18 @@ Mesh* generateGrid(unsigned int rows, unsigned int cols)
 			auiIndices[index++] = (r + 1) * cols + (c + 1);
 			auiIndices[index++] = r * cols + (c + 1);
 		}
-
-	std::vector<Vertex> verts;
-	std::vector<unsigned int> indices;
-	for (unsigned int i = 0; i < rows * cols; i++)
-		verts.push_back(aoVertices[i]);
-
-	for (unsigned int i = 0; i < numitems; i++)
-		indices.push_back(auiIndices[i]);
+	}
+	//Create and bind buffers to a vertex array object
+	int m_rows = rows;
+	int m_cols = cols;
 	Mesh* plane = new Mesh();
-	//plane->initialize(verts, indices);
-	//plane->create_buffers();
+	for (unsigned int i = 0; i < (rows * cols); i++)
+		verts.push_back(aoVertices[i]);
+	for (unsigned int i = 0; i < index; i++)
+		indices.push_back(auiIndices[i]);
+	plane->initialize(verts, indices);
+	plane->create_buffers();
 
-	// generate buffers
-	glGenBuffers(1, &plane->m_VBO);
-	glGenBuffers(1, &plane->m_IBO);
-
-	// generate vertex array object (descriptors)
-	glGenVertexArrays(1, &plane->m_VAO);
-
-	// all changes will apply to this handle
-	glBindVertexArray(plane->m_VAO);
-
-	// set vertex buffer data
-	glBindBuffer(GL_ARRAY_BUFFER, plane->m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(Vertex), aoVertices, GL_STATIC_DRAW);
-
-	// index data
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, plane->m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, plane->index_count * sizeof(unsigned int), &indices, GL_STATIC_DRAW);
-
-	// position
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-
-	// colors
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4)));
-	// normals
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 2));
-
-	// texcoords
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3));
-
-	// tangents
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)(sizeof(glm::vec4) * 3 + sizeof(glm::vec2)));
-
-	// safety
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	delete[] aoVertices;
-	delete[] auiIndices;
 	return plane;
 }
 
@@ -118,8 +83,8 @@ void TextureApplication::startup()
 	//crateShader->load("NoiseVert.vert", GL_VERTEX_SHADER);
 	//crateShader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
 	
-	crateShader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
-	crateShader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
+	crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
+	crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
 	shader->load("NoiseVert.vert", GL_VERTEX_SHADER);
 	shader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
 
@@ -132,13 +97,14 @@ void TextureApplication::startup()
 	*/
 	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	
-
-	//setupTexture("images/earth_diffuse.jpg", &texture1);
-	//setupTexture("images/earth_cloud.jpg", &texture2);
-	setupTexture("images/crate.png", &texture3);
 	
-	planeMesh = generateGrid(64, 64);
+	setupTexture("images/earth_diffuse.jpg", &texture1);
+	setupTexture("images/earth_cloud.jpg", &texture2);
+	setupTexture("images/crate.png", &texture3);
+
+	
 	genNoiseTex(64, 64);
+	planeMesh = generateGrid(64, 64);
 	
 }
 
@@ -190,27 +156,10 @@ void TextureApplication::update(float)
 void TextureApplication::draw()
 {
 	glm::mat4 pvm = cam->getProjectionView();
-
-#pragma region sphere
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	shader->bind();
-
-	int matUniform = shader->getUniform("projectionView");
-	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
-
-	texture4 = perlin_data;
-	drawTex(shader, &texture4, 1);
-
-	sphereMesh->bind();
-	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
-	sphereMesh->unbind();
-	shader->unbind();
-#pragma endregion
-
 #pragma region plane
 	crateShader->bind();
 
-	matUniform = crateShader->getUniform("projectionView");
+	int matUniform = crateShader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
 	texture4 = perlin_data;
@@ -221,6 +170,25 @@ void TextureApplication::draw()
 	planeMesh->unbind();
 	crateShader->unbind();
 #pragma endregion 
+
+	/*
+#pragma region sphere
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	shader->bind();
+
+	matUniform = shader->getUniform("projectionView");
+	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
+
+	texture4 = perlin_data;
+	drawTex(shader, &texture4, 1);
+
+	sphereMesh->bind();
+	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
+	sphereMesh->unbind();
+	shader->unbind();
+#pragma endregion
+*/
+
 }
 
 
@@ -251,12 +219,7 @@ void TextureApplication::generateSphere(const unsigned int segments, const unsig
 
 			vertex->position = glm::vec4(x0 * 1.5f, y0 *1.5f, z0 * 1.5f, 1);
 			vertex->normal = glm::vec4(x0, y0, z0, 0);
-
 			vertex->tangent = glm::vec4(glm::sin(segment * segmentAngle + glm::half_pi<float>()), 0, glm::cos(segment * segmentAngle + glm::half_pi<float>()), 0);
-
-			// not a part of the AIEVertex, but this is how w generate bitangents
-			vertex->bitangent = glm::vec4(glm::cross(glm::vec3(vertex->normal), glm::vec3(vertex->tangent)), 0);
-
 			vertex->texcoord = glm::vec2(segment / (float)segments, ring / (float)(rings + 1));
 		}
 	}
@@ -319,6 +282,7 @@ void TextureApplication::generateSphere(const unsigned int segments, const unsig
 	delete[] indices;
 	delete[] vertices;
 }
+
 
 void TextureApplication::setupTexture(char* imageLoc, unsigned int* texture)
 {
