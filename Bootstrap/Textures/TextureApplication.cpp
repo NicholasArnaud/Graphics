@@ -9,6 +9,41 @@
 #include <sstream>
 
 
+double interpolate(double a, double b, double x)
+{
+	double ft = x * 3.1415927;
+	double f = (1.0f - cos(ft))*0.5f;
+	return a*(1.0f - f) + b*f;
+}
+
+double noise(double x, double y)
+{
+	double n = x - y * 57;
+	n = pow(n + 13, n);
+	int nn = n*(n*n * 60493 + 19990303) + 1376312589;
+	return 1.0f - static_cast<double>(nn) / 1073741824.0f;
+}
+
+double nick_perlin(glm::vec2 pos)
+{
+	double floorx = floor(pos.x);
+	double floory = floor(pos.y);
+
+	double s = noise(floorx, floory);
+	double t = noise(floorx + 1, floory);
+	double u = noise(floorx, floory + 1);
+	double v = noise(floorx + 1, floory + 1);
+
+	double int1 = interpolate(s, t, pos.x - floorx);
+	double int2 = interpolate(u, v, pos.x - floorx);
+
+	return interpolate(int1, int2, pos.y - floory);
+}
+
+
+
+
+
 TextureApplication::TextureApplication() : texture1(0), texture2(0), texture3(0), perlin_data(0), texture4(0)
 {
 	sphereMesh = new Mesh();
@@ -76,7 +111,7 @@ Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
 
 void TextureApplication::startup()
 {
-	cam->setLookAt(glm::vec3(0.5f, 15, 15), glm::vec3(0), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(35,35,75), glm::vec3(35,0,35), glm::vec3(0, 1, 0));
 
 	//shader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
 	//shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
@@ -172,7 +207,7 @@ void TextureApplication::draw()
 	planeShader->unbind();
 #pragma endregion 
 
-	
+/*	
 #pragma region sphere
 
 	shader->bind();
@@ -188,6 +223,7 @@ void TextureApplication::draw()
 	sphereMesh->unbind();
 	shader->unbind();
 #pragma endregion
+	*/
 }
 
 
@@ -330,7 +366,8 @@ float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
 			for (int o = 0; o < octaves; ++o)
 			{
 				float freq = powf(2, (float)o);
-				float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
+				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
+				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
 				perlinData[y * dims + x] += perlinSample * amplitude;
 				amplitude *= persistence;
 			}
@@ -347,3 +384,5 @@ float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
 	float* one = new float(10.1f);
 	return one;
 }
+
+
