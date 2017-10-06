@@ -16,6 +16,7 @@ public:
 	unsigned int texture3;
 	unsigned int perlin_data;
 	unsigned texture4;
+	
 
 
 protected:
@@ -31,7 +32,7 @@ protected:
 	void generateSphere(const unsigned segments, const unsigned rings, unsigned& vao, unsigned& vbo, unsigned& ibo,
 	                    unsigned& indexCount) const;
 
-	Shader* crateShader;
+	Shader* planeShader;
 	Shader* shader;
 	Mesh* planeMesh;
 	Mesh* sphereMesh;

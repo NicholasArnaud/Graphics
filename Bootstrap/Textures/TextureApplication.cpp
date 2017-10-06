@@ -14,7 +14,7 @@ TextureApplication::TextureApplication() : texture1(0), texture2(0), texture3(0)
 	sphereMesh = new Mesh();
 	planeMesh = new Mesh();
 	shader = new Shader();
-	crateShader = new Shader();
+	planeShader = new Shader();
 	cam = new Camera();
 	cam->setPerspective(glm::pi<float>() / 4.f, 16.f / 9.f, 1.0f, 1000.f);
 }
@@ -76,15 +76,15 @@ Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
 
 void TextureApplication::startup()
 {
-	cam->setLookAt(glm::vec3(0.5f, 0.5f, 5), glm::vec3(0), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(0.5f, 15, 15), glm::vec3(0), glm::vec3(0, 1, 0));
 
 	//shader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
 	//shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
-	//crateShader->load("NoiseVert.vert", GL_VERTEX_SHADER);
-	//crateShader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
+	planeShader->load("NoiseVert.vert", GL_VERTEX_SHADER);
+	planeShader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
 	
-	crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
-	crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
+	//crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
+	//crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
 	shader->load("NoiseVert.vert", GL_VERTEX_SHADER);
 	shader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
 
@@ -98,14 +98,13 @@ void TextureApplication::startup()
 	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	
 	
-	setupTexture("images/earth_diffuse.jpg", &texture1);
-	setupTexture("images/earth_cloud.jpg", &texture2);
-	setupTexture("images/crate.png", &texture3);
+	//setupTexture("images/earth_diffuse.jpg", &texture1);
+	//setupTexture("images/earth_cloud.jpg", &texture2);
+	//setupTexture("images/crate.png", &texture3);
 
 	
 	genNoiseTex(64, 64);
 	planeMesh = generateGrid(64, 64);
-	
 }
 
 void TextureApplication::shutdown()
@@ -155,25 +154,27 @@ void TextureApplication::update(float)
 
 void TextureApplication::draw()
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 	glm::mat4 pvm = cam->getProjectionView();
 #pragma region plane
-	crateShader->bind();
-
-	int matUniform = crateShader->getUniform("projectionView");
+	planeShader->bind();
+	int matUniform = shader->getUniform("projectionView");
+	unsigned int perlin = shader->getUniform("perlinTexture");
+	
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
-
-	texture4 = perlin_data;
-	drawTex(crateShader, &texture3, 1);
-
+	//texture4 = perlin_data;
+	//drawTex(crateShader, &texture4, 1);
 	planeMesh->bind();
+	glUniform1i(perlin, 0);
 	glDrawElements(GL_TRIANGLES, planeMesh->index_count, GL_UNSIGNED_INT, 0);
 	planeMesh->unbind();
-	crateShader->unbind();
+	planeShader->unbind();
 #pragma endregion 
 
-	/*
+	
 #pragma region sphere
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
 	shader->bind();
 
 	matUniform = shader->getUniform("projectionView");
@@ -187,8 +188,6 @@ void TextureApplication::draw()
 	sphereMesh->unbind();
 	shader->unbind();
 #pragma endregion
-*/
-
 }
 
 
