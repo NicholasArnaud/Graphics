@@ -9,45 +9,37 @@
 #include <sstream>
 #include<iostream>
 
-int p[] = { 151,160,137,91,90,15,                
-131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23, 
-190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
-88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
-77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,
-102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,
-135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,
-5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,
-223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,
-129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
-251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
-49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
-138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
+int prime[][3] = {
+	 995615039, 600173719, 701464987 ,
+	 831731269, 162318869, 136250887 ,
+	 174329291, 946737083, 245679977 ,
+	 362489573, 795918041, 350777237 ,
+	 457025711, 880830799, 909678923 ,
+	 787070341, 177340217, 593320781 ,
+	 405493717, 291031019, 391950901 ,
+	 458904767, 676625681, 424452397 ,
+	 531736441, 939683957, 810651871 ,
+	 997169939, 842027887, 423882827 
 };
+
 float interpolate(float a, float b, float x)
 {
 	float ft = x * 3.1415927;
-	float f = (1.0f - cos(ft))*0.7f;
-	return a*(1.0f - f) + sin(b*f)*-0.2f;
-}
-
-double noise(int x)
-{
-	int a = rand()% 255;
-	int b = rand() % 255;
-	int c = rand() % 255;
-	
-	x = pow(x << 13, x);
-	return (1.0 - ((x * (x* x * 15731 + 789221) + 1376312589) & 0x7ffffff) / 1073741824.0);
+	float f = (1.0 - cos(ft))*0.5;
+	return a*(1.0 - f) + sin(b*f)*0.5;
 }
 
 double noise(int x, int y)
 {
-	int n = x +y;
+	int rnd = rand() % 30;
+	int a = prime[rnd][rand() % 3];
+	int b = prime[rnd][rand() % 3];
+	int c= prime[rnd][rand() % 3];
+	int n = x +y*57;
 	n = n << 13 ^ n;
-	int nn = 1.0-(n*(n*n * 15731 + 789221) & 0x7ffffff);
+	int nn = 1.0-(n*(n*n * a + b)+c & 0x7ffffff) / 1073741824.0;
 	//must be within -1 to 1
-	double test = noise(nn);
-	return test;
+	return nn;
 }
 
 double nick_perlin(glm::vec2 pos)
@@ -62,8 +54,7 @@ double nick_perlin(glm::vec2 pos)
 
 	double int1 = interpolate(s, t, pos.x - floorx);
 	double int2 = interpolate(u, v, pos.x - floorx);
-
-	return interpolate(int1,int2, pos.y-floory);
+	return interpolate(int1,int2, pos.y - floory);
 }
 
 
@@ -156,7 +147,7 @@ void TextureApplication::startup()
 	* glTexParameteri
 	* glTexParameteri
 	*/
-	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
+	//generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	
 	
 	//setupTexture("images/earth_diffuse.jpg", &texture1);
@@ -379,21 +370,23 @@ void TextureApplication::drawTex(Shader* shader, unsigned int* texture, const in
 
 float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
 {
-	int dims = 64; float *perlinData = new float[dims * dims];
+	int dims = 64; 
+	float *perlinData = new float[dims * dims];
 	float scale = (1.0f / dims) * 3;
-	int octaves = 6;
+	int octaves = 16;
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
 			float amplitude = 1.f;
-			float persistence = 0.3f;
+			float persistence = 0.2f;
+
 			perlinData[y * dims + x] = 0;
 			for (int o = 0; o < octaves; ++o)
 			{
 				float freq = powf(2, (float)o);
-				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
-				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
+				float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
+				perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
 				perlinData[y * dims + x] += perlinSample * amplitude;
 				amplitude *= persistence;
 			}

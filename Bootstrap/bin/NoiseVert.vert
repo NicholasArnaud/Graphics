@@ -11,7 +11,7 @@ void main()
 { 
 	vTexCoord = UV;
 	vec4 pos = Position; 
-	pos.y += texture(perlinTexture, vTexCoord).r * 15;
+	pos.y += texture(perlinTexture, vTexCoord).r * 5;
 
 	gl_Position = projectionView * pos;
 }
