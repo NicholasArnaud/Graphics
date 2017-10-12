@@ -25,8 +25,8 @@ int prime[][3] = {
 float interpolate(float a, float b, float x)
 {
 	float ft = x * 3.1415927;
-	float f = (1.0 - cos(ft))*0.5;
-	return a*(1.0 - f) + sin(b*f)*0.5;
+	float f = (1.0 - cos(ft))*x;
+	return a*(1.0 - f) + sin(b* f)*-x;
 }
 
 double noise(int x, int y)
@@ -35,7 +35,7 @@ double noise(int x, int y)
 	int a = prime[rnd][rand() % 3];
 	int b = prime[rnd][rand() % 3];
 	int c= prime[rnd][rand() % 3];
-	int n = x +y*57;
+	int n = (x +y)*57;
 	n = n << 13 ^ n;
 	int nn = 1.0-(n*(n*n * a + b)+c & 0x7ffffff) / 1073741824.0;
 	//must be within -1 to 1
@@ -373,20 +373,20 @@ float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
 	int dims = 64; 
 	float *perlinData = new float[dims * dims];
 	float scale = (1.0f / dims) * 3;
-	int octaves = 16;
+	int octaves = 6;
 	for (int x = 0; x < width; ++x)
 	{
 		for (int y = 0; y < height; ++y)
 		{
 			float amplitude = 1.f;
-			float persistence = 0.2f;
+			float persistence = 0.3f;
 
 			perlinData[y * dims + x] = 0;
 			for (int o = 0; o < octaves; ++o)
 			{
 				float freq = powf(2, (float)o);
-				float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
-				perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
+				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
+				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
 				perlinData[y * dims + x] += perlinSample * amplitude;
 				amplitude *= persistence;
 			}
