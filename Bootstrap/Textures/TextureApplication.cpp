@@ -57,7 +57,40 @@ double nick_perlin(glm::vec2 pos)
 	return interpolate(int1,int2, pos.y - floory);
 }
 
+float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
+{
+	int dims = 64;
+	float *perlinData = new float[dims * dims];
+	float scale = (1.0f / dims) * 3;
+	int octaves = 6;
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			float amplitude = 1.f;
+			float persistence = 0.3f;
 
+			perlinData[y * dims + x] = 0;
+			for (int o = 0; o < octaves; ++o)
+			{
+				float freq = powf(2, (float)o);
+				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
+				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
+				perlinData[y * dims + x] += perlinSample * amplitude;
+				amplitude *= persistence;
+			}
+		}
+	}
+	glGenTextures(1, &perlin_data);
+	glBindTexture(GL_TEXTURE_2D, perlin_data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, perlinData);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	float* one = new float(10.1f);
+	return one;
+}
 
 
 
@@ -77,6 +110,7 @@ TextureApplication::~TextureApplication()
 
 Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
 {
+	//Double for loop for Vertex assignment
 	auto aoVertices = new Vertex[rows * cols];
 	for (unsigned int r = 0; r < rows; ++r)
 	{
@@ -112,6 +146,7 @@ Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
 			auiIndices[index++] = r * cols + (c + 1);
 		}
 	}
+	
 	//Create and bind buffers to a vertex array object
 	int m_rows = rows;
 	int m_cols = cols;
@@ -367,41 +402,3 @@ void TextureApplication::drawTex(Shader* shader, unsigned int* texture, const in
 		ss.clear();
 	}
 }
-
-float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
-{
-	int dims = 64; 
-	float *perlinData = new float[dims * dims];
-	float scale = (1.0f / dims) * 3;
-	int octaves = 6;
-	for (int x = 0; x < width; ++x)
-	{
-		for (int y = 0; y < height; ++y)
-		{
-			float amplitude = 1.f;
-			float persistence = 0.3f;
-
-			perlinData[y * dims + x] = 0;
-			for (int o = 0; o < octaves; ++o)
-			{
-				float freq = powf(2, (float)o);
-				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
-				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
-				perlinData[y * dims + x] += perlinSample * amplitude;
-				amplitude *= persistence;
-			}
-		}
-	}
-
-	glGenTextures(1, &perlin_data);
-	glBindTexture(GL_TEXTURE_2D, perlin_data);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width,height, 0, GL_RED, GL_FLOAT, perlinData);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	float* one = new float(10.1f);
-	return one;
-}
-
-
