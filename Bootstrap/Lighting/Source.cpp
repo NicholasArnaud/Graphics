@@ -1,4 +1,5 @@
 #include "LightingApp.h"
+#include <Application.h>
 
 
 int main()

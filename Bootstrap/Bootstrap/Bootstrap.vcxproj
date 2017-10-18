@@ -19,43 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Dependencies\imgui\imgui.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\Dependencies\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CameraApp.cpp" />
-    <ClCompile Include="Gizmos.cpp" />
-    <ClCompile Include="gl_core_4_4.c" />
-    <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="IntroductionApp.cpp" />
-    <ClCompile Include="Source.cpp" />
-    <ClCompile Include="Transform.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Dependencies\imgui\imconfig.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui.h" />
-    <ClInclude Include="..\Dependencies\imgui\imgui_internal.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_rect_pack.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_textedit.h" />
-    <ClInclude Include="..\Dependencies\imgui\stb_truetype.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CameraApp.h" />
+    <ClInclude Include="Filer.h" />
     <ClInclude Include="Gizmos.h" />
     <ClInclude Include="gl_core_4_4.h" />
-    <ClInclude Include="imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="IntroductionApp.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Transform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Gizmos.cpp" />
+    <ClCompile Include="gl_core_4_4.c" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CEC9CF4C-0209-43B8-824B-30501F0B6FF4}</ProjectGuid>
     <RootNamespace>Bootstrap</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>0.Bootstrap</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -101,8 +91,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Dependencies\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)bin</OutDir>
     <SourcePath>$(VC_SourcePath);$(ProjectDir)</SourcePath>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

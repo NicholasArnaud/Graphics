@@ -40,11 +40,5 @@
     <None Include="..\bin\TexPlusLightFragment.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\bin\NoiseVert.vert">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\bin\NoiseFragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

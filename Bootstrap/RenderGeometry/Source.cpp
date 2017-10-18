@@ -1,5 +1,6 @@
-#include "Application.h"
 #include "GeometryApplication.h"
+
+
 int main()
 {
 	Application* app = new GeometryApplication();

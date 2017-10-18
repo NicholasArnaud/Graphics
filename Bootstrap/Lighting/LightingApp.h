@@ -1,6 +1,8 @@
 #pragma once
 #include "Application.h"
-#include "GeometryApplication.h"
+#include "Mesh.h"
+#include "Shader.h"
+#include "Camera.h"
 
 
 struct DirectionalLight

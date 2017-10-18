@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GeometryApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <None Include="..\bin\NoiseFragment.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\bin\NoiseVert.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProceduralGenerationApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeometryApplication.h">
+    <ClInclude Include="ProceduralGenerationApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\bin\Fragment.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\bin\Vertex.vert">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

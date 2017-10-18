@@ -2,7 +2,7 @@
 
 
 
-Camera::Camera(): m_transform(nullptr), m_worldTransform(glm::mat4(1)), m_viewTransform(glm::mat4(1)), m_projectionTransform(glm::mat4(1)), m_projectionViewTransform(glm::mat4(1))
+Camera::Camera(): m_transform(), m_worldTransform(glm::mat4(1)), m_viewTransform(glm::mat4(1)), m_projectionTransform(glm::mat4(1)), m_projectionViewTransform(glm::mat4(1))
 {
 }
 
@@ -59,8 +59,6 @@ void Camera::setLookAt(glm::vec3 eye, glm::vec3 centre, glm::vec3 up)
 void Camera::setPosition(glm::vec3 position)
 {
 	m_worldTransform[3] = glm::vec4(position, 1);
-	m_transform->rotate(glm::pi<float>() * .25f, ZAXIS);
-	m_transform->translate(position);
 	m_viewTransform = glm::inverse(m_worldTransform);
 }
 

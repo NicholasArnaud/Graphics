@@ -9,92 +9,11 @@
 #include <sstream>
 #include<iostream>
 
-int prime[][3] = {
-	 995615039, 600173719, 701464987 ,
-	 831731269, 162318869, 136250887 ,
-	 174329291, 946737083, 245679977 ,
-	 362489573, 795918041, 350777237 ,
-	 457025711, 880830799, 909678923 ,
-	 787070341, 177340217, 593320781 ,
-	 405493717, 291031019, 391950901 ,
-	 458904767, 676625681, 424452397 ,
-	 531736441, 939683957, 810651871 ,
-	 997169939, 842027887, 423882827 
-};
-
-float interpolate(float a, float b, float x)
-{
-	float ft = x * 3.1415927;
-	float f = (1.0 - cos(ft))*x;
-	return a*(1.0 - f) + sin(b* f)*-x;
-}
-
-double noise(int x, int y)
-{
-	int rnd = rand() % 30;
-	int a = prime[rnd][rand() % 3];
-	int b = prime[rnd][rand() % 3];
-	int c= prime[rnd][rand() % 3];
-	int n = (x +y)*57;
-	n = n << 13 ^ n;
-	int nn = 1.0-(n*(n*n * a + b)+c & 0x7ffffff) / 1073741824.0;
-	//must be within -1 to 1
-	return nn;
-}
-
-double nick_perlin(glm::vec2 pos)
-{
-	double floorx = floor(pos.x);
-	double floory = floor(pos.y);
-
-	double s = noise(floorx, floory);
-	double t = noise(floorx + 1, floory);
-	double u = noise(floorx, floory + 1);
-	double v = noise(floorx + 1, floory + 1);
-
-	double int1 = interpolate(s, t, pos.x - floorx);
-	double int2 = interpolate(u, v, pos.x - floorx);
-	return interpolate(int1,int2, pos.y - floory);
-}
-
-float* TextureApplication::genNoiseTex(unsigned int width, unsigned int height)
-{
-	int dims = 64;
-	float *perlinData = new float[dims * dims];
-	float scale = (1.0f / dims) * 3;
-	int octaves = 6;
-	for (int x = 0; x < width; ++x)
-	{
-		for (int y = 0; y < height; ++y)
-		{
-			float amplitude = 1.f;
-			float persistence = 0.3f;
-
-			perlinData[y * dims + x] = 0;
-			for (int o = 0; o < octaves; ++o)
-			{
-				float freq = powf(2, (float)o);
-				//float perlinSample = glm::perlin(glm::vec2((float)x, (float)y) * scale * freq) * 0.5f + 0.5f;
-				float perlinSample = nick_perlin(glm::vec2((float)x, (float)y) * scale * freq)* 0.5f + 0.5f;
-				perlinData[y * dims + x] += perlinSample * amplitude;
-				amplitude *= persistence;
-			}
-		}
-	}
-	glGenTextures(1, &perlin_data);
-	glBindTexture(GL_TEXTURE_2D, perlin_data);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, perlinData);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	float* one = new float(10.1f);
-	return one;
-}
 
 
 
-TextureApplication::TextureApplication() : texture1(0), texture2(0), texture3(0), perlin_data(0), texture4(0)
+
+TextureApplication::TextureApplication() : texture1(0), texture2(0), texture3(0),texture4(0)
 {
 	sphereMesh = new Mesh();
 	planeMesh = new Mesh();
@@ -108,72 +27,14 @@ TextureApplication::~TextureApplication()
 {
 }
 
-Mesh* TextureApplication::generateGrid(unsigned int rows, unsigned int cols)
-{
-	//Double for loop for Vertex assignment
-	auto aoVertices = new Vertex[rows * cols];
-	for (unsigned int r = 0; r < rows; ++r)
-	{
-		for (unsigned int c = 0; c < cols; ++c)
-		{
-			Vertex verts = {
-				glm::vec4(float(c), 0, float(r), 1),
-				glm::vec4(sin(r), cos(c), 0, 1),
-				glm::vec4(0, 1, 0, 0),
-				glm::vec2(float(c) / float(cols -1), float(r) / float(rows -1))
-			};
-			aoVertices[r * cols + c] = verts;
-		}
-	}
 
-	std::vector<Vertex> verts = std::vector<Vertex>();
-	std::vector<unsigned int> indices = std::vector<unsigned int>();
-
-	//Defining index count based off quad count (2 triangles per quad)
-	unsigned int* auiIndices = new unsigned int[(rows - 1) * (cols - 1) * 6];
-	unsigned int index = 0;
-	for (unsigned int r = 0; r < (rows - 1); ++r)
-	{
-		for (unsigned int c = 0; c < (cols - 1); ++c)
-		{
-			//Triangle 1
-			auiIndices[index++] = r * cols + c;
-			auiIndices[index++] = (r + 1) * cols + c;
-			auiIndices[index++] = (r + 1) * cols + (c + 1);
-			//Triangle 2
-			auiIndices[index++] = r * cols + c;
-			auiIndices[index++] = (r + 1) * cols + (c + 1);
-			auiIndices[index++] = r * cols + (c + 1);
-		}
-	}
-	
-	//Create and bind buffers to a vertex array object
-	int m_rows = rows;
-	int m_cols = cols;
-	Mesh* plane = new Mesh();
-	for (unsigned int i = 0; i < (rows * cols); i++)
-		verts.push_back(aoVertices[i]);
-	for (unsigned int i = 0; i < index; i++)
-		indices.push_back(auiIndices[i]);
-	plane->initialize(verts, indices);
-	plane->create_buffers();
-
-	return plane;
-}
 
 void TextureApplication::startup()
 {
-	cam->setLookAt(glm::vec3(35,35,75), glm::vec3(35,0,35), glm::vec3(0, 1, 0));
+	cam->setLookAt(glm::vec3(10), glm::vec3(0), glm::vec3(0, 1, 0));
 
-	//shader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
-	//shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
-	planeShader->load("NoiseVert.vert", GL_VERTEX_SHADER);
-	planeShader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
-	
-	//crateShader->load("TextureVertex.vert", GL_VERTEX_SHADER);
-	//crateShader->load("TextureFragment.frag", GL_FRAGMENT_SHADER);
-	shader->load("NoiseVert.vert", GL_VERTEX_SHADER);
-	shader->load("NoiseFragment.frag", GL_FRAGMENT_SHADER);
+	shader->load("TexPlusLightVertex.vert", GL_VERTEX_SHADER);
+	shader->load("TexPlusLightFragment.frag", GL_FRAGMENT_SHADER);
 
 	/*
 	* glGenTextures
@@ -182,16 +43,12 @@ void TextureApplication::startup()
 	* glTexParameteri
 	* glTexParameteri
 	*/
-	//generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
+	generateSphere(100, 100, sphereMesh->m_VAO, sphereMesh->m_VBO, sphereMesh->m_IBO, sphereMesh->index_count);
 	
 	
-	//setupTexture("images/earth_diffuse.jpg", &texture1);
-	//setupTexture("images/earth_cloud.jpg", &texture2);
-	//setupTexture("images/crate.png", &texture3);
-
-	
-	genNoiseTex(64, 64);
-	planeMesh = generateGrid(64, 64);
+	setupTexture("images/earth_diffuse.jpg", &texture1);
+	setupTexture("images/earth_cloud.jpg", &texture2);
+	setupTexture("images/crate.png", &texture3);
 }
 
 void TextureApplication::shutdown()
@@ -244,38 +101,22 @@ void TextureApplication::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glm::mat4 pvm = cam->getProjectionView();
-#pragma region plane
-	planeShader->bind();
-	int matUniform = shader->getUniform("projectionView");
-	unsigned int perlin = shader->getUniform("perlinTexture");
-	
-	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
-	//texture4 = perlin_data;
-	//drawTex(crateShader, &texture4, 1);
-	planeMesh->bind();
-	glUniform1i(perlin, 0);
-	glDrawElements(GL_TRIANGLES, planeMesh->index_count, GL_UNSIGNED_INT, 0);
-	planeMesh->unbind();
-	planeShader->unbind();
-#pragma endregion 
 
-/*	
+
 #pragma region sphere
 
 	shader->bind();
 
-	matUniform = shader->getUniform("projectionView");
+	int matUniform = shader->getUniform("projectionView");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, &pvm[0][0]);
 
-	texture4 = perlin_data;
-	drawTex(shader, &texture4, 1);
+	drawTex(shader, &texture1, 2);
 
 	sphereMesh->bind();
 	glDrawElements(GL_TRIANGLES, sphereMesh->index_count, GL_UNSIGNED_INT, 0);
 	sphereMesh->unbind();
 	shader->unbind();
 #pragma endregion
-	*/
 }
 
 

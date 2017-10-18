@@ -1,5 +1,4 @@
 #pragma once
-#include <glm.hpp>
 #include <ext.hpp>
 
 enum Axis

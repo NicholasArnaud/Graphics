@@ -2,7 +2,7 @@
 
 
 
-Transform::Transform() : m_world(1), m_local(1), m_rotation(1), m_position(0), m_scale(1)
+Transform::Transform() : m_world(1), m_local(1), m_rotation(1), m_position(1), m_scale(1)
 {
 }
 
@@ -42,7 +42,7 @@ void Transform::rotate(float radians, Axis rotationAxis)
 		break;
 	}
 
-	m_rotation = glm::mat4(
+	this->m_rotation = glm::mat4(
 		glm::vec4(xaxis, 1),
 		glm::vec4(yaxis, 1),
 		glm::vec4(zaxis, 1),
