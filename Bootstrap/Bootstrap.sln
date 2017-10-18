@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "0.Bootstrap", "Bootstrap\Bo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "6.ProceduralGeneration", "ProceduralGeneration\ProceduralGeneration.vcxproj", "{026DF387-C349-4020-B206-8806270E126B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2.CamerasAndProjections", "CamerasAndProjections\CamerasAndProjections.vcxproj", "{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{026DF387-C349-4020-B206-8806270E126B}.Release|x64.Build.0 = Release|x64
 		{026DF387-C349-4020-B206-8806270E126B}.Release|x86.ActiveCfg = Release|Win32
 		{026DF387-C349-4020-B206-8806270E126B}.Release|x86.Build.0 = Release|Win32
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Debug|x64.ActiveCfg = Debug|x64
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Debug|x64.Build.0 = Debug|x64
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Debug|x86.ActiveCfg = Debug|Win32
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Debug|x86.Build.0 = Debug|Win32
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Release|x64.ActiveCfg = Release|x64
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Release|x64.Build.0 = Release|x64
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Release|x86.ActiveCfg = Release|Win32
+		{FCF636D0-EBF7-456A-A0ED-FE14801A02FF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
