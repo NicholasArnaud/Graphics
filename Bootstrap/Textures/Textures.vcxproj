@@ -72,6 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)Bootstrap;$(SolutionDir)Dependencies\glm;$(SolutionDir)Lighting;$(SolutionDir)Dependencies\glfw\include;$(SolutionDir)Dependencies\stb;$(SolutionDir)Dependencies\imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Dependencies\imgui;$(SolutionDir)bin;$(SolutionDir)Dependencies\glfw\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\Executables\Texturing</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
